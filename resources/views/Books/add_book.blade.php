@@ -1,7 +1,7 @@
 @if(!isset(Auth::user()->email))
-	<script>windows.location="/admin";</script>
+    <script>windows.location="/admin";</script>
 
-	
+    
 @endif
 
 @extends('layouts\admin1')
@@ -12,24 +12,32 @@
   
 
 @section('content')
-<form method="post" action="{{ url('/save_book') }}" id="form1" enctype="multipart/form-data">
+<form method="post" action="{{ url('admin/save_book') }}" id="form1" enctype="multipart/form-data">
 @if($message = Session::get('success'))
 <div class="alert alert-success">
-	
-		
-		<strong>{{ $message }} </strong>
-	
-	</div>
+    
+        
+        <strong>{{ $message }} </strong>
+    
+    </div>
+@endif
+@if($message = Session::get('failinsert'))
+<div class="alert alert-danger">
+    
+        
+        <strong>{{ $message }} </strong>
+    
+    </div>
 @endif
 
 @if(count($errors)>0)
-	<div class="alert alert-danger">
-	<ul>
-	@foreach($errors->all() as $error)
-		<li> {{ $error }}</li>
-	@endforeach
-	</ul>
-	</div>
+    <div class="alert alert-danger">
+    <ul>
+    @foreach($errors->all() as $error)
+        <li> {{ $error }}</li>
+    @endforeach
+    </ul>
+    </div>
 @endif
 
 {{ csrf_field() }}
@@ -127,7 +135,7 @@
           minlength: 8
         }
     },
-	messages: {
+    messages: {
         email: {
           required: "Please Enter Email Address.",
           email: "Please Enter a valid Email Address."

@@ -204,6 +204,22 @@
 	
 	</div>
 @endif
+@if($message = Session::get('editid'))
+<div class="alert alert-danger">
+	
+		
+		<strong>{{ $message }} </strong>
+	
+	</div>
+@endif
+@if($message = Session::get('failupdate'))
+<div class="alert alert-danger">
+	
+		
+		<strong>{{ $message }} </strong>
+	
+	</div>
+@endif
 <form method="post" action="{{ url('/update_book') }}" id="form1" enctype="multipart/form-data">
 
 @if(count($errors)>0)

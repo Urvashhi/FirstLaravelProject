@@ -13,10 +13,10 @@
 @php
 if(isset($_COOKIE['email']) && isset($_COOKIE['password'])) 
 {   $email=$_COOKIE['email'];
-	$password=$_COOKIE['password'];
+    $password=$_COOKIE['password'];
 }else{
-	$email='';
-	$password='';
+    $email='';
+    $password='';
 }
 @endphp
 
@@ -24,29 +24,29 @@ if(isset($_COOKIE['email']) && isset($_COOKIE['password']))
 @section('content')
 
 @if(isset(Auth::user()->email))
-	<script>windows.location="admin/successlogin";</script>
+    <script>windows.location="admin/successlogin";</script>
 
-	
+    
 @endif
 
 @if($message = Session::get('error'))
 <div class="alert alert-danger">
-	
-		<input type="button" class="close" data-dismiss="alert">x</button>
-		<strong>{{ $message }} </strong>
-	
-	</div>
+    
+        <input type="button" class="close" data-dismiss="alert">x</button>
+        <strong>{{ $message }} </strong>
+    
+    </div>
 @endif
 
 
 @if(count($errors)>0)
-	<div class="alert alert-danger">
-	<ul>
-	@foreach($errors->all() as $error)
-		<li> {{ $error }}</li>
-	@endforeach
-	</ul>
-	</div>
+    <div class="alert alert-danger">
+    <ul>
+    @foreach($errors->all() as $error)
+        <li> {{ $error }}</li>
+    @endforeach
+    </ul>
+    </div>
 @endif
 
 
@@ -62,15 +62,15 @@ if(isset($_COOKIE['email']) && isset($_COOKIE['password']))
 <input name="password" type="password" class="form-control" id="password" value="@php if(!isset($_COOKIE['password'])){ echo old('password'); }else{ echo $password; } @endphp">
 <br><br>
 <div class="form-group">
-   	<!--<label>Keep me signed in</label>-->
+    <!--<label>Keep me signed in</label>-->
     <input type="checkbox" id="remember" name="remember" class="remember"> <label>Remember Me</label><br>
     </div>
-	
+    
 <div class="form-group">
-   	<!--<label>Keep me signed in</label>-->
+    <!--<label>Keep me signed in</label>-->
     <a href="changepassword.blade.php">Change_password</a>
     </div>
-	
+    
 <center><input name="login" type="Submit" class="btn btn-primary">  </center>
  </form>
 @endsection
@@ -110,7 +110,7 @@ if(isset($_COOKIE['email']) && isset($_COOKIE['password']))
           minlength: 8
         }
     },
-	messages: {
+    messages: {
         email: {
           required: "Please Enter Email Address.",
           email: "Please Enter a valid Email Address."

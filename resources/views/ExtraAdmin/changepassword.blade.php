@@ -3,7 +3,7 @@
 
 @if($message = Session::get('success'))
 <div class="alert alert-danger">
-		<strong>{{ $message }} </strong>
+        <strong>{{ $message }} </strong>
 </div>
 @endif
 
@@ -11,26 +11,26 @@
 
 @if($message = Session::get('error'))
 <div class="alert alert-danger">
-	
-		<input type="button" class="close" data-dismiss="alert">x</button>
-		<strong>{{ $message }} </strong>
-	
-	</div>
+    
+        <input type="button" class="close" data-dismiss="alert">x</button>
+        <strong>{{ $message }} </strong>
+    
+    </div>
 @endif
 
 
 @if(count($errors)>0)
-	<div class="alert alert-danger">
-	<ul>
-	@foreach($errors->all() as $error)
-		<li> {{ $error }}</li>
-	@endforeach
-	</ul>
-	</div>
+    <div class="alert alert-danger">
+    <ul>
+    @foreach($errors->all() as $error)
+        <li> {{ $error }}</li>
+    @endforeach
+    </ul>
+    </div>
 @endif
 <div class="alert alert-danger success-block">
-		<center><strong><h2>Change Password</h2></strong></center>
-	</div>
+        <center><strong><h2>Change Password</h2></strong></center>
+    </div>
 <form method="post" action="{{ url('admin/update_password') }}" id="passwordVlidation">
 @csrf
 <div class = "form-group">
@@ -44,11 +44,11 @@
 </div>
 <br><br>
 <div class = "form-group">
-	<label>Confirm Password:</label>
+    <label>Confirm Password:</label>
 <input name="confirm_password" type="password" class="form-control" id="confirm_password" value="{{old('confirm_password')}}">
 
     </div>
-	
+    
 <center><input name="login" type="Submit" class="btn btn-primary">  </center>
  </form>
 @endsection
@@ -88,13 +88,13 @@
           required: true,
           minlength: 8
         },
-		confirm_password: {
+        confirm_password: {
           required: true,
           minlength: 8,
-		  equalTo:'#new_password'
+          equalTo:'#new_password'
         }
     },
-	messages: {
+    messages: {
         old_password: {
            required: "Please Enter Old Password.",
           minlength: "Password must be at least 8 characters long."
@@ -103,7 +103,7 @@
           required: "Please Enter New Password.",
           minlength: "Password must be at least 8 characters long."
         },
-		confirm_password: {
+        confirm_password: {
           required: "Please Enter Confirm Password.",
           minlength: "Password must be at least 8 characters long."
         }

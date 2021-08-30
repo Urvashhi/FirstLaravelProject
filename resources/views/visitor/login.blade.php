@@ -1,60 +1,69 @@
+
 @extends('layouts\visitorMain')
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
  
      <link href="style.css" rel="stylesheet" type="text/css" />
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
   
-  
-  
-
 @section('title','Login Form')
 
 
 @php
 if(isset($_COOKIE['email']) && isset($_COOKIE['password'])) 
 {   $email=$_COOKIE['email'];
-	$password=$_COOKIE['password'];
+    $password=$_COOKIE['password'];
 }else{
-	$email='';
-	$password='';
+    $email='';
+    $password='';
 }
 @endphp
 
 
-@section('content')
-	<h1>Login form</h1><br>
-@if(isset(Auth::user()->email))
-	<script>windows.location="admin/successlogin";</script>
 
-	
+@section('content')
+    <h1>Login form</h1><br>
+@if(isset(Auth::user()->email))
+    <script>windows.location="/dashboard";</script>
+
+    
 @endif
+
 @if($message = Session::get('success'))
 <div class="alert alert-success">
-	
-		
-		<strong>{{ $message }} </strong>
-	
-	</div>
+    
+        
+        <strong>{{ $message }} </strong>
+    
+    </div>
 @endif
 @if($message = Session::get('error'))
 <div class="alert alert-danger">
-	
-		<input type="button" class="close" data-dismiss="alert">x</button>
-		<strong>{{ $message }} </strong>
-	
-	</div>
+    
+        <input type="button" class="close" data-dismiss="alert">x</button>
+        <strong>{{ $message }} </strong>
+    
+    </div>
 @endif
 
-<form method="post" action="{{ url('/visitor/login') }}" id="form1">
+@if($message = Session::get('failtologin'))
+<div class="alert alert-danger">
+    
+        <input type="button" class="close" data-dismiss="alert">x</button>
+        <strong>{{ $message }} </strong>
+    
+    </div>
+@endif
+
+<form method="post" action="{{ url('visitor/login') }}" id="form1">
 
 @if(count($errors)>0)
-	<div class="alert alert-danger">
-	<ul>
-	@foreach($errors->all() as $error)
-		<li> {{ $error }}</li>
-	@endforeach
-	</ul>
-	</div>
+    <div class="alert alert-danger">
+    <ul>
+    @foreach($errors->all() as $error)
+        <li> {{ $error }}</li>
+    @endforeach
+    </ul>
+    </div>
 @endif
 
 {{ csrf_field() }}
@@ -67,18 +76,56 @@ if(isset($_COOKIE['email']) && isset($_COOKIE['password']))
 <br>
 
 <div class="form-group">
-   	<!--<label>Keep me signed in</label>-->
+    <!--<label>Keep me signed in</label>-->
     <input type="checkbox" id="remember" name="remember" class="remember"> <label>Remember Me</label><br>
     </div>
-	<!--<div class="form-group">
-   	<!--<label>Keep me signed in</label>-->
+    <!--<div class="form-group">
+    <!--<label>Keep me signed in</label>-->
     <!--<a href="/admin/change_password">Change_password</a>
     </div>-->
-	
+    
 <center><input name="login" type="Submit" class="btn btn-primary">  </center>
- </form>
-@endsection
 
+
+ <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js"></script>
+<style>
+    label.error {
+         color: #dc3545;
+         font-size: 14px;
+    }
+</style>
+ <script type="text/javascript">
+
+  $().ready(function () {
+    $("#form1").validate({
+      rules: {
+        email: {
+          required: true,
+          email: true
+        },
+       password: {
+          required: true,
+          minlength: 8
+        }
+    },
+    messages: {
+        email: {
+          required: "Please Enter Email Address.",
+          email: "Please Enter a valid Email Address."
+        },
+        password: {
+          required: "Please Enter Password.",
+          minlength: "Password must be at least 8 characters long."
+        }
+      }
+      
+     });
+  });
+
+</script> 
 
  <?php  //client side validation ?>
  
@@ -114,7 +161,7 @@ if(isset($_COOKIE['email']) && isset($_COOKIE['password']))
           minlength: 8
         }
     },
-	messages: {
+    messages: {
         email: {
           required: "Please Enter Email Address.",
           email: "Please Enter a valid Email Address."
@@ -129,3 +176,6 @@ if(isset($_COOKIE['email']) && isset($_COOKIE['password']))
   });
 
 </script> 
+
+ </form>
+@endsection

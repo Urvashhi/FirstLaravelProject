@@ -16,10 +16,21 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        if(auth()->check() && auth()->user()->is_admin==1)
-		{
-			return $next($request);
-		}
-		return redirect('home')->with("error","you don't have avvess to admin.");
+        if (auth()->check() && auth()->user()->is_admin==1) {
+            return $next($request);
+/*        if (auth()->user()->is_admin == 1){
+                 if (!session()->has('LoggedAdmin') && ($request->path() !='/admin')) {
+            return redirect('/home')->with('visitor', 'You must be logged in');
+}
+if (session()->has('LoggedAdmin') && ($request->path() == '/admin')) {
+    return back();
+}
+
+           return $next($request)->header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate')
+                              ->header('Pragma', 'no-cache')
+                              ->header('Expires', 'Sat 01 Jan 1990 00:00:00 GMT');
+*/
+        }
+        return redirect('home')->with("error", "you don't have access to admin.");
     }
 }

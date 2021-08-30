@@ -1,3 +1,8 @@
+<?php
+use App\Http\Controllers\CartController;
+
+$total = CartController::cartItem();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +10,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Lumia Bootstrap Template - Index</title>
+  <title>Ashi's book</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -45,12 +50,42 @@
         <!-- Uncomment below if you prefer to use an image logo -->
         <!-- <a href="index.html"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
       </div>
-
-      <nav class="nav-menu d-none d-lg-block">
+      
+<nav class="nav-menu d-none d-lg-block">
         <ul>
-			<button class="btn btn-primary"><a href="/logout">Logout</a></button>
+          
+            <li><a href="/dashboard ">Dashboard</a></li>
+            <li><a href="/borrow_list ">BorrowList</a></li>
+             <li class="drop-down"><a href="">Profile</a>
+            <ul>
+            <!--@if(Session::get('LoggedUser'))
+              <li><a href="/edit_user_profile/{{ session::get('LoggedUser') }}">Edit profile</a></li>
+            
+              <li><a href="/change_user_pass/{{ session::get('LoggedUser') }}">Change Password</a></li>
+            @endif-->
+                <li><a href="/edit_user_profile/{{ Auth::user()->id }} ">Edit profile</a></li>
+            
+              <li><a href="/change_user_pass/{{ Auth::user()->id }} ">Change Password</a></li>
+
+            
+                
+
+            </ul>
+            
+            <li><a href="cart_log">Cart({{ $total }})</a></li>
+          </li>
+          <li></li>
+       </ul>
+       <!-- <li><a href="/change_user_pass">Change Password</a></li>-->
+              
+      </nav><!-- .nav-menu -->
+      <nav class="nav-menu d-none d-lg-block">
+      
+        <ul>
+            <button class="btn btn-primary"><a href="/logout">Logout</a></button>
 
         </ul>
+        
       </nav><!-- .nav-menu -->
 
       <div class="header-social-links">
@@ -64,14 +99,23 @@
   </header><!-- End Header -->
 
   <!-- ======= Hero Section ======= -->
-  
-<section>
-	
+  <br><br><br><br><br><br><br><br>
   <div>
+
+    
+     
    @yield('content')
-</div>
-  </section><!-- End Hero -->
-	
+    
+    
+    
+    
+    </div>
+    
+ <!-- End Hero -->
+    <BR><BR><BR><BR><BR><BR><BR><BR><BR>
+    <BR><BR><BR><BR><BR><BR><BR><BR><BR>
+    
+    
   
     
 

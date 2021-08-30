@@ -8,16 +8,23 @@
 
 @section('content')
 <form method="post" action="/update_user" id="form1" enctype="multipart/form-data">
-
+@if($message = Session::get('updateUser'))
+<div class="alert alert-success">
+    
+        
+        <strong>{{ $message }} </strong>
+    
+    </div>
+@endif
 
 @if(count($errors)>0)
-	<div class="alert alert-danger">
-	<ul>
-	@foreach($errors->all() as $error)
-		<li> {{ $error }}</li>
-	@endforeach
-	</ul>
-	</div>
+    <div class="alert alert-danger">
+    <ul>
+    @foreach($errors->all() as $error)
+        <li> {{ $error }}</li>
+    @endforeach
+    </ul>
+    </div>
 @endif
 
 {{ csrf_field() }}
@@ -36,14 +43,14 @@
 <br>
 <div>
      <label>Gender:</label>
-  		<input type="radio" name="gender" value="Male" @php if($user->gender=="Male") { echo "checked"; } @endphp >
-  		<label for="male">Male</label><br>
-  		<input type="radio" name="gender" value="Female" @php if($user->gender=="Female") { echo "checked"; } @endphp >
-  		<label for="female">Female</label><br>
-	
-	</div>
+        <input type="radio" name="gender" value="Male" @php if($user->gender=="Male") { echo "checked"; } @endphp >
+        <label for="male">Male</label><br>
+        <input type="radio" name="gender" value="Female" @php if($user->gender=="Female") { echo "checked"; } @endphp >
+        <label for="female">Female</label><br>
+    
+    </div>
 
-	 <br>
+     <br>
 <label>Mobile_no:</label>
 <input name="mobile_no" type="text" class="form-control" id="mobile_no" value="{{ $user->mobile_no }}" >
 <br>
@@ -60,7 +67,7 @@
 
 
        <label> Birthdate:</label> 
-	   <input type="text" name="birthdate" class="disableFuturedate"  class="form-control" value="{{ $user->birthdate }}" >
+       <input type="text" name="birthdate" class="disableFuturedate"  class="form-control" value="{{ $user->birthdate }}" >
 <script>
    $(document).ready(function () {
       var currentDate = new Date();
@@ -85,16 +92,16 @@
 <label>Address:</label><br>
 <input name="address" value="{{ $user->address }}" class="form-control" ></input> <br>
 <!--<textarea name="description" class="form-control" ></textarea>-->
-	 <div class="form-group">
-	 <label>City:</label>
+     <div class="form-group">
+     <label>City:</label>
 <select name="city" class="form-control" >
    <option value="" >Select city:</option>
    <!--<option value="Ahemedabad" <?php //if( $data['city'] == "Ahemedabad"){ echo "selected"; } ?> >Ahemedabad</option>   -->
    <option value="Ahemedabad" @php if($user->city=="Ahemedabad") { echo "selected"; } @endphp >Ahemedabad</option>
-	 
+     
    <option value="Surat" @php if($user->city=="Surat") { echo "selected"; } @endphp>Surat</option>
-	<option value="Toronto" @php if($user->city=="Toronto") { echo "selected"; } @endphp>Toronto</option>
-	<option value="Ottava" @php if($user->city=="Ottava") { echo "selected"; } @endphp>Ottava</option>
+    <option value="Toronto" @php if($user->city=="Toronto") { echo "selected"; } @endphp>Toronto</option>
+    <option value="Ottava" @php if($user->city=="Ottava") { echo "selected"; } @endphp>Ottava</option>
 </select>
 
 </div>
@@ -106,14 +113,14 @@
    <option value="" >Select State:</option>
 
     <option value="Gujarat" @php if($user->state=="Gujarat") { echo "selected"; } @endphp > Gujarat</option>
-	
+    
    <option value="Canada" @php if($user->state=="Canada") { echo "selected"; } @endphp > Canada</option>
 </select><br>               
 <label>Pincode:</label>
  <input name="pincode" type="text" class="form-control" id="pincode" value="{{ $user->pincode }}" >
  
     <!-- Close form-group -->
-	
+    
 <br>
 
 
@@ -151,7 +158,7 @@
           minlength: 8
         }
     },
-	messages: {
+    messages: {
         email: {
           required: "Please Enter Email Address.",
           email: "Please Enter a valid Email Address."

@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Lumia Bootstrap Template - Index</title>
+  <title>Ashi's book</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -56,9 +56,13 @@
               <li><a href="/login">User Login</a></li>
               
             </ul>
-          </li>
+          </li>   
+		  
+		  <!--<li><a href="/singleBook ">Single Book</a></li>-->
           <li><a href="/registration">Registration</a></li>
-         
+		 
+		  <li class="fa fa-shopping-cart"><a href="/cart">Cart <h1 class="badge badge-pill badge-primary"> @if(session()->has('cart')){{ count(session('cart')) }} @endif</h1></a></li>
+        
 
         </ul>
       </nav><!-- .nav-menu -->

@@ -8,15 +8,31 @@
 @section('content')
 <form method="post" action="{{ url('/saveData') }}" id="form1" enctype="multipart/form-data">
 
+@if($message = Session::get('bookupdate'))
+<div class="alert alert-success">
+    
+        
+        <strong>{{ $message }} </strong>
+    
+    </div>
+@endif
+
+@if($message = Session::get('failtores'))
+<div class="alert alert-danger">
+    
+        <strong>{{ $message }} </strong>
+    
+    </div>
+@endif
 
 @if(count($errors)>0)
-	<div class="alert alert-danger">
-	<ul>
-	@foreach($errors->all() as $error)
-		<li> {{ $error }}</li>
-	@endforeach
-	</ul>
-	</div>
+    <div class="alert alert-danger">
+    <ul>
+    @foreach($errors->all() as $error)
+        <li> {{ $error }}</li>
+    @endforeach
+    </ul>
+    </div>
 @endif
 
 {{ csrf_field() }}
@@ -37,14 +53,14 @@
 <br>
 <div>
      <label>Gender:</label>
-  		<input type="radio" name="gender" value="Male" >
-  		<label for="male">Male</label><br>
-  		<input type="radio" name="gender" value="Female">
-  		<label for="female">Female</label><br>
-	
-	</div>
+        <input type="radio" name="gender" value="Male" >
+        <label for="male">Male</label><br>
+        <input type="radio" name="gender" value="Female">
+        <label for="female">Female</label><br>
+    
+    </div>
 
-	 <br>
+     <br>
 <label>Mobile_no:</label>
 <input name="mobile_no" type="text" class="form-control" id="mobile_no" value="{{ old('mobile_no') }}"  placeholder="Address">
 <br>
@@ -61,7 +77,7 @@
 
 
        <label> Birthdate:</label> 
-	   <input type="text" name="birthdate" class="disableFuturedate"  class="form-control">
+       <input type="text" name="birthdate" class="disableFuturedate"  class="form-control">
 <script>
    $(document).ready(function () {
       var currentDate = new Date();
@@ -103,15 +119,15 @@
 <label>Address:</label><br>
 <input name="address" value="{{ old('address')}}" class="form-control"  placeholder="Address"></input> <br>
 <!--<textarea name="description" class="form-control" ></textarea>-->
-	 <div class="form-group">
-	 <label>City:</label>
+     <div class="form-group">
+     <label>City:</label>
 <select name="city" class="form-control" >
    <option value="" >Select city:</option>
    <!--<option value="Ahemedabad" <?php //if( $data['city'] == "Ahemedabad"){ echo "selected"; } ?> >Ahemedabad</option>   -->
    <option value="Ahemedabad"  >Ahemedabad</option>
    <option value="Surat" >Surat</option>
-	<option value="Toronto" >Toronto</option>
-	<option value="Ottava" >Ottava</option>
+    <option value="Toronto" >Toronto</option>
+    <option value="Ottava" >Ottava</option>
 </select>
 
 </div>
@@ -123,14 +139,14 @@
    <option value="" >Select State:</option>
 
     <option value="Gujarat">Gujarat</option>
-	
+    
    <option value="Canada">Canada</option>
 </select><br>               
 <label>Pincode:</label>
  <input name="pincode" type="text" class="form-control" id="pincode" value="{{ old('pincode') }}"  placeholder="Pincode">
  
     <!-- Close form-group -->
-	
+    
 <br>
 
 
@@ -168,7 +184,7 @@
           minlength: 8
         }
     },
-	messages: {
+    messages: {
         email: {
           required: "Please Enter Email Address.",
           email: "Please Enter a valid Email Address."

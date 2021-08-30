@@ -10383,3 +10383,13 @@ File: scss
 @media (max-width: 991.98px) {
   .do-block {
     display: block !important; } }
+
+.books-img{
+	width: 100%;
+	float: left;
+	text-align: center;
+	padding-top: 40px;
+	padding-bottom: 40px;
+	margin: 0px;
+}
+

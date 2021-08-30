@@ -2,8 +2,8 @@
 
 namespace App;
 
-
 namespace App\Models;
+
 //use Sortable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,10 +15,11 @@ use Kyslik\ColumnSortable\Sortable;
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
-	use Sortable;
-	public $table = "users";
-	//public $fillable = ['id','first_name','email', 'birthdate','city','state'];
-	
+    use Sortable;
+    public $table = "users";
+     public $timestamps= false;
+ //public $fillable = ['id','first_name','email', 'birthdate','city','state'];
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -37,7 +38,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-public $sortable = ['id','first_name','email', 'mobile_no','birthdate','city','state'];
+    public $sortable = ['id','first_name','email', 'mobile_no','birthdate','city','state'];
     /**
      * The attributes that should be cast to native types.
      *

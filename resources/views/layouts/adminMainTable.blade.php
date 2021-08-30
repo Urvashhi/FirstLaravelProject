@@ -116,7 +116,7 @@
                         </li>
                         
 						 <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="/change_password"
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="/change_password/{{ auth()->user()->id }}"
                                 aria-expanded="false">
                                 <i class="fa fa-key" aria-hidden="true"></i>
                                 <span class="hide-menu">Change Password</span>
@@ -147,7 +147,42 @@
                                 <span class="hide-book_list">Add Book</span>
                             </a>
                         </li>
+								<!--				 <li class="sidebar-item">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="/return_book_page"
+                                aria-expanded="false">
+                                <i class="fa fa-table" aria-hidden="true"></i>
+                                <span class="hide-menu">Return Book Free</span>
+                            </a>
+                        </li>-->
+						 <li class="drop-down" ><a href="">History</a>
+						 <ul>
+						 
+									<li class="sidebar-item">
+										<a class="sidebar-link waves-effect waves-dark sidebar-link" href="/request_book"
+											aria-expanded="false">
+											<i class="fa fa-book" aria-hidden="true"></i>
+											<span class="hide-menu">Request Book</span>
+										</a>
+									</li>
 						
+								<li class="sidebar-item">
+										<a class="sidebar-link waves-effect waves-dark sidebar-link" href="/borrow_book_list"
+											aria-expanded="false">
+											<i class="fa fa-book" aria-hidden="true"></i>
+											<span class="hide-menu">Borrowed Book</span>
+										</a>
+									</li>
+							
+
+					   
+									<li class="sidebar-item">
+										<a class="sidebar-link waves-effect waves-dark sidebar-link" href="/return_book"
+											aria-expanded="false">
+											<i class="fa fa-book" aria-hidden="true"></i>
+											<span class="hide-menu">Retrun Book</span>
+										</a>
+									</li>
+						 </ul>
                     </ul>
 
                 </nav>
@@ -209,10 +244,9 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="white-box">
-                            <h3 class="box-title">Book Table</h3>
+                            <!--<h3 class="box-title">Table</h3>-->
                             <p class="text-muted"> <code></code></p>
-                           
-								@yield('content1')
+									@yield('content1')
                             </div>
                         </div>
                     </div>
