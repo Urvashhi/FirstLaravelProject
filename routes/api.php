@@ -26,6 +26,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
 Route::get('/api_check', [ApiCheck::class,'index']);
 Route::post('/api_login', [ApiCheck::class,'login']);
 Route::post('/save', [ApiCheck::class,'res']);

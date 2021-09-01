@@ -120,7 +120,7 @@
 -->
 
 <form method="post" action="{{ url('/book_list') }}" id="form1">
-@if($message = Session::get('deletebook'))
+@if($message = Session::get('success'))
 <div class="alert alert-success">
     
         
@@ -128,7 +128,7 @@
     
     </div>
 @endif
-@if($message = Session::get('faildelete'))
+@if($message = Session::get('error'))
 <div class="alert alert-danger">
     
         

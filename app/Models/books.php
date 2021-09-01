@@ -2,7 +2,6 @@
 namespace App;
 
 namespace App\Models;
-
 use Kyslik\ColumnSortable\Sortable;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;

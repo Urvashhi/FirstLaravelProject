@@ -140,9 +140,7 @@ class UserApiController extends Controller
     
     public function search($name)
     {
-        
-    
-        $result= User::where("first_name", "like", "%".$name."%")->get();
+		$result= User::where("first_name", "like", "%".$name."%")->get();
     
         if (count($result)) {
             return $result;

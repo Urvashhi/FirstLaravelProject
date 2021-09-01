@@ -445,14 +445,14 @@ class AdminController extends Controller
                   */
                 // DB::table('books')->join('issue_book','issue_book.book_id','=','books.id') ->select('books.*','cart.id as cart_id');
                 
- /*              $data = array('name'=>"Ashi milonee");
+			 /*              $data = array('name'=>"Ashi milonee");
 
-     //$pdf = PDF::loadView('Books.test', $data);
-       Mail::send(['text'=>'mail'], $data, function($message) {
-          $message->to('urvashi2705@gmail.com', "Ashi's book")->subject
-             ('Laravel Basic Testing Mail')->attach('borrowBook.pdf');
-          $message->from('urvashi.hiranandani@brainvire.com','ashi milonee');
-       });*/
+				 //$pdf = PDF::loadView('Books.test', $data);
+				   Mail::send(['text'=>'mail'], $data, function($message) {
+					  $message->to('urvashi2705@gmail.com', "Ashi's book")->subject
+						 ('Laravel Basic Testing Mail')->attach('borrowBook.pdf');
+					  $message->from('urvashi.hiranandani@brainvire.com','ashi milonee');
+				   });*/
       
                     $mpdf = new \Mpdf\Mpdf();
                     //$pdf=\App::make('dompdf.wrapper');
@@ -483,18 +483,18 @@ class AdminController extends Controller
      //  ob_start();
         
             $output = '
-     <h3 align="center">Borrow Book Data</h3>
-     <table width="100%" style="border-collapse: collapse; border: 0px;">
-      <tr>
-    <th style="border: 1px solid; padding:12px;" width="30%">User Name</th>
-	 <th style="border: 1px solid; padding:12px;" width="30%">Image</th>
-    <th style="border: 1px solid; padding:12px;" width="30%">Title</th>
-    <th style="border: 1px solid; padding:12px;" width="15%">Author</th>
-    <th style="border: 1px solid; padding:12px;" width="15%">Category</th>
-	 <th style="border: 1px solid; padding:12px;" width="20%">IssueDate</th>
-	  <th style="border: 1px solid; padding:12px;" width="20%">Return Date</th>
-   </tr>
-     ';
+			 <h3 align="center">Borrow Book Data</h3>
+			 <table width="100%" style="border-collapse: collapse; border: 0px;">
+			  <tr>
+			<th style="border: 1px solid; padding:12px;" width="30%">User Name</th>
+			 <th style="border: 1px solid; padding:12px;" width="30%">Image</th>
+			<th style="border: 1px solid; padding:12px;" width="30%">Title</th>
+			<th style="border: 1px solid; padding:12px;" width="15%">Author</th>
+			<th style="border: 1px solid; padding:12px;" width="15%">Category</th>
+			 <th style="border: 1px solid; padding:12px;" width="20%">IssueDate</th>
+			  <th style="border: 1px solid; padding:12px;" width="20%">Return Date</th>
+		   </tr>
+			 ';
             foreach ($book as $bk) {
                    $output .= '
       <tr>
@@ -549,7 +549,7 @@ class AdminController extends Controller
                     approve=>"return"
                ]);
 
-*/            //return view('books.borrowList', ['issue_book'=>$books]);
+			*/            //return view('books.borrowList', ['issue_book'=>$books]);
             return back()->with('success', "Book return successfully.");
         } catch (\Exception $e) {
             return back()->with('error', "Fail to return book list.");

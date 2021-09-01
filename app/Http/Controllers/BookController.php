@@ -46,7 +46,7 @@ class BookController extends Controller
                     'lang'          => 'required',
                     'category'      => 'required',
                     'quantity'      => 'required',
-                    'image'         => 'required|image|mimes:jpeg,png|max:2048',
+                    'image'         => 'required|image|mimes:jpeg,png,jpg',
                     
                 ]);
         try {
@@ -130,7 +130,7 @@ class BookController extends Controller
                     'lang'          => 'required',
                     'category'      => 'required',
                     'quantity'      => 'required',
-                    'image'         => 'required|image|mimes:jpeg,png|max:2048',
+                    'image'         => 'required|image|mimes:jpeg,png,jpg',
                             
             ]);
             try {
@@ -199,15 +199,16 @@ class BookController extends Controller
                 //return back()->with('bookupdate',"Book data updated successfully")->with('image',$imageName);
     }
     
-    public function deleteBook(Request $request, $id)
+    public function deleteBook($id)
     {
         try {
                 $books = books::find($id);
+				//dd($books);
                 //$file_name = $request->image;
                 $file_name = $books->image;
                 //$imageName =  $request->image;
                 $path=public_path('upload/'.$file_name);
-                $book = DB::table('books')->where('b_id', $id)->delete();
+                $book = DB::table('books')->where('id', $id)->delete();
                 unlink($path);
                 return back()->with('success', "Book deleted successfully");
         } catch (\Exception $e) {

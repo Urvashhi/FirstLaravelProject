@@ -15,17 +15,13 @@ class CartApiController extends Controller
     
     public function cart()
     {
-        try {
-           // $userId=auth()->user()->id;
             $userId=3;
             return DB::table('cart')
             ->join('books', 'cart.book_id', '=', 'books.id')
             ->where('cart.user_id', $userId)
             ->select('books.*', 'cart.id as cart_id')
             ->get();
-        } catch (\Exception $e) {
-            return redirect('/cart');
-        }
+       
     }
     
     public function addToCart(Request $request)

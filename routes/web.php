@@ -34,7 +34,7 @@ Route::get('/', function () {
 
 //Route::view("login","login");
 Route::group(['middleware'=>['AuthCheckAdmin']], function () {
-//if(Session::get('LoggedAdmin'))   {
+
     Route::get('/successlogin', [AdminController::class,'successlogin'])->middleware('is_admin');
     Route::get('/change_password/{id}', [AdminController::class,'changePassword']);
     Route::any('/user_profile', [AdminController::class,'userProfile']);
@@ -50,10 +50,13 @@ Route::group(['middleware'=>['AuthCheckAdmin']], function () {
     Route::get('/approve/{id}/{id2}', [AdminController::class,'approvePage']);
     Route::post('/approve_request', [AdminController::class,'approveRequest']);
     Route::get('/issue_id/{id}', [AdminController::class,'issue_id']);
+	Route::get('/borrow_list', [BookController::class,'borrowList']);
+	Route::get('/borrow_book_list', [AdminController::class,'borrowBookList']);
+	Route::get('/return_book', [AdminController::class,'returnBookList']);
 });
     
 Route::get('/admin', [AdminController::class,'mainpage']);
-Route::get('/getcookie', [AdminController::class,'get_cookie']);
+//Route::get('/getcookie', [AdminController::class,'get_cookie']);
 //Route::get('/login', [AdminController::class,'mainpage']);
 //Route::get('/admin/login', [AdminController::class,'save_cookie']);
 Route::post('/admin/check_login', [AdminController::class,'checkLogin']);
@@ -64,9 +67,7 @@ Route::post('admin/save_book', [BookController::class,'saveBook']);
 Route::post('/update_book', [BookController::class,'updateBook']);
 Route::get('/singleBook/{id}', [BookController::class,'singleBook']);
 Route::post('/borrow_book', [BookController::class,'borrowBook']);
-Route::get('/borrow_list', [BookController::class,'borrowList']);
-Route::get('/borrow_book_list', [AdminController::class,'borrowBookList']);
-Route::get('/return_book', [AdminController::class,'returnBookList']);
+
 //Route::get('/add_cart',[BookController::class,'getAddToCart']);
 Route::post('/return_book/{id}/{id2}', [AdminController::class,'returnBook']);
 Route::get('/return_book_page', [AdminController::class,'returnBookPage']);

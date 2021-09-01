@@ -154,9 +154,7 @@
                                 <span class="hide-menu">Return Book Free</span>
                             </a>
                         </li>-->
-						 <li class="drop-down" ><a href="">History</a>
-						 <ul>
-						 
+						
 									<li class="sidebar-item">
 										<a class="sidebar-link waves-effect waves-dark sidebar-link" href="/request_book"
 											aria-expanded="false">
@@ -182,7 +180,7 @@
 											<span class="hide-menu">Retrun Book</span>
 										</a>
 									</li>
-						 </ul>
+						
                     </ul>
 
                 </nav>
