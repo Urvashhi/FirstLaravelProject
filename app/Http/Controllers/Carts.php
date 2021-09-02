@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Books;
+use App\Models\Book;
 
-class Cart extends Controller
+class Carts extends Controller
 {
    
     
@@ -23,7 +23,7 @@ class Cart extends Controller
     {
         //echo"jksakhdd";
         //echo $book->id;
-        $book = Books::find($id);
+        $book = Book::find($id);
         //dd($book);
         $cart= session()->get('cart');
         //dd($cart);

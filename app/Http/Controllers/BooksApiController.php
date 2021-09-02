@@ -12,7 +12,7 @@ use App\Models\IssueBook;
 
 use DB;
 
-class BookApiController extends Controller
+class BooksApiController extends Controller
 {
     public function index(Request $request)
     {

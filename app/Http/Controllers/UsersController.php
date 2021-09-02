@@ -10,7 +10,7 @@ use Auth;
 use Hash;
 use DB;
 
-class UserController extends Controller
+class UsersController extends Controller
 {
     public function index(Request $request)
     {

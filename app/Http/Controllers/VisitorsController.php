@@ -9,7 +9,7 @@ use Auth;
 use Hash;
 use DB;
 
-class VisitorController extends Controller
+class VisitorsController extends Controller
 {
     public function index()
     {

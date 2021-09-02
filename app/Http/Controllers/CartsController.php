@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Session;
 use Illuminate\Support\Facades\DB;
 
-class CartController extends Controller
+class CartsController extends Controller
 {
    
     
@@ -17,8 +17,8 @@ class CartController extends Controller
     {
         try {
             $userId=auth()->user()->id;
-            $books=DB::table('cart')
-            ->join('books', 'cart.book_id', '=', 'books.id')
+            $books=Cart
+            ::join('books', 'cart.book_id', '=', 'books.id')
             ->where('cart.user_id', $userId)
             ->select('books.*', 'cart.id as cart_id')
             ->get();
@@ -43,7 +43,7 @@ class CartController extends Controller
              $request->session()->put('bookId', $id);
              $cart->user_id=auth()->user()->id;
               
-             $count = DB::table('cart')->where('book_id', $cart->book_id)->count();
+             $count =Cart::where('book_id', $cart->book_id)->count();
              
             $ct = DB::table('cart')->where('user_id', $cart->user_id)->count();
         if ($count >= 1 && $ct > 0) {

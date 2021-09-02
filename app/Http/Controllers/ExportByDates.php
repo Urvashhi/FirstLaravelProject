@@ -16,7 +16,7 @@ use Excel;
 
 use Maatwebsite\Excel\Concerns\FromCollection;
 
-class ExportByDate extends Controller
+class ExportByDates extends Controller
 {
     function exportData(Request $request)
     {

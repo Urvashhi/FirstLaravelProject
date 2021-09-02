@@ -10,7 +10,7 @@ use PDF;
  
  use DB;
 
-class SendEmailController extends Controller
+class SendEmailsController extends Controller
 {
   
     public function sendmail(Request $request)

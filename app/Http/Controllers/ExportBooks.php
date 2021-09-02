@@ -14,7 +14,7 @@ use Excel;
 
 use Maatwebsite\Excel\Concerns\FromCollection;
 
-class ExportBook extends Controller
+class ExportBooks extends Controller
 {
     function exportData(Request $request)
     {

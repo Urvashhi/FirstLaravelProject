@@ -8,7 +8,7 @@ use Mail;
 
 use PDF;
 
-class MailController extends Controller
+class MailsController extends Controller
 {
     public function basic_email()
     {

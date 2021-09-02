@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class IssueBook extends Model
 {
     use HasFactory;
-    public $table="issue_book";
+	//$table="issue_book";
     public $timestamps= false;
 }

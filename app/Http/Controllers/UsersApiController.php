@@ -12,7 +12,7 @@ use Validator;
 
 use Auth;
 
-class UserApiController extends Controller
+class UsersApiController extends Controller
 {
     
     public function index()

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use DB;
 use PDF;
 
-class PDFController extends Controller
+class PDFsController extends Controller
 {
                      /**
      * Display a listing of the resource.

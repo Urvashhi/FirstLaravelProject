@@ -8,7 +8,7 @@ use App\Models\Books;
 use Maatwebsite\Excel\Facades\Concerns\FromCollection;
 
 //use Maatwebsite\Excel\Concerns\FromCollection;
-class BookExport extends Controller
+class BooksExport extends Controller
 {
     function exportExcel()
     {

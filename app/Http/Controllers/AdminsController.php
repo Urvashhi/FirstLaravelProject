@@ -9,13 +9,14 @@ use Session;
 //use Illuminate\Validation\Validator;
 //use App\Http\Request;
 use App\Models\User;
+use App\Models\IssueBook;
 use DB;
 use Validator;
 use Auth;
 use Hash;
 use Mail;
 
-class AdminController extends Controller
+class AdminsController extends Controller
 {
     public function mainpage()
     {
@@ -149,7 +150,7 @@ class AdminController extends Controller
     public function userProfile(Request $request)
     {
         try {
-            $data=['LoggedAdminInfo'=>User::where('id', '=', session('LoggedAdmin'))->first()];
+          //  $data=['LoggedAdminInfo'=>User::where('id', '=', session('LoggedAdmin'))->first()];
             
             $record_per_page = isset($request->record_per_page) ? $request->record_per_page : 3;
             if ($request->search_user) {
@@ -178,7 +179,7 @@ class AdminController extends Controller
         try {
            // $data=['LoggedAdminInfo'=>User::where('id', '=', session('LoggedAdmin'))->first()];
             
-            $user = DB::table('users')->where('id', $id)->first();//or firstOrFail
+            $user =User::where('id', $id)->first();//or firstOrFail
             //return view('admin.edit_user','.id not found');
             return view('admin.edit_user', compact('user'));//shows error but not in detail
         } catch (\Exception $e) {
@@ -204,7 +205,7 @@ class AdminController extends Controller
                 
             ]);
             try {
-                DB::table('users')->where('id', $request->id)->update([
+                User::where('id', $request->id)->update([
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'email' => $request->email,
@@ -236,7 +237,7 @@ class AdminController extends Controller
             
             ]);
             try {
-                    DB::table('users')->where('id', $request->id)->update([
+                   User::where('id', $request->id)->update([
                         'first_name' => $request->first_name,
                         'last_name' => $request->last_name,
                         'email' => $request->email,
@@ -264,7 +265,7 @@ class AdminController extends Controller
             //$data=['LoggedAdminInfo'=>User::where('id', '=', session('LoggedAdmin'))->first()];
             
             $users = User::find($id);
-            $book = DB::table('users')->where('id', $id)->delete();
+            $book = User::where('id', $id)->delete();
             return back()->with('success', "User deleted successfully");
         } catch (\Exception $e) {
             return back()->with('error', "Fail to delete user.");
@@ -291,9 +292,9 @@ class AdminController extends Controller
     public function requestBook()
     {
         try {
-               $books=DB::table('issue_book')
-               ->join('books', 'issue_book.book_id', '=', 'books.id')
-               ->join('users', 'issue_book.user_id', '=', 'users.id')
+               $books=IssueBook
+               ::join('books', 'issue_books.book_id', '=', 'books.id')
+               ->join('users', 'issue_books.user_id', '=', 'users.id')
                ->where('issue_book.approve', "pending")
                // ->select( 'issue_book.*', 'users.id AS u_id', 'book.*' ,'issue_book.*' )
                ->get();
@@ -316,10 +317,10 @@ class AdminController extends Controller
     public function borrowBookList()
     {
         try {
-               $books=DB::table('issue_book')
-               ->join('books', 'issue_book.book_id', '=', 'books.id')
-               ->join('users', 'issue_book.user_id', '=', 'users.id')
-               ->where('issue_book.approve', "yes")
+               $books=IssueBook
+               ::join('books', 'issue_books.book_id', '=', 'books.id')
+               ->join('users', 'issue_books.user_id', '=', 'users.id')
+               ->where('issue_books.approve', "yes")
                // ->select( 'issue_book.*', 'users.id AS u_id', 'book.*' ,'issue_book.*' )
                ->get();
               /*foreach($books as $bk)
@@ -339,11 +340,11 @@ class AdminController extends Controller
     
     public function returnBookList()
     {
-        try {
-               $books=DB::table('issue_book')
-               ->join('books', 'issue_book.book_id', '=', 'books.id')
-               ->join('users', 'issue_book.user_id', '=', 'users.id')
-               ->where('issue_book.approve', "return")
+       try {
+               $books=IssueBook
+               ::join('books', 'issue_books.book_id', '=', 'books.id')
+               ->join('users', 'issue_books.user_id', '=', 'users.id')
+               ->where('issue_books.approve', "return")
                // ->select( 'issue_book.*', 'users.id AS u_id', 'book.*' ,'issue_book.*' )
                ->get();
               /*foreach($books as $bk)
@@ -376,8 +377,8 @@ class AdminController extends Controller
     {
         try {
         //dd($request->session()->put('bookId', $request->b_id));
-                            $book1 = DB::table('books')->where('id', $id2)->first();//or firstOrFail
-                     $book = DB::table('users')->where('id', $id)->first();//or firstOrFail
+                            $book1 = Book::where('id', $id2)->first();//or firstOrFail
+                     $book =User::where('id', $id)->first();//or firstOrFail
             //return view('admin.edit_user','.id not found');
             return view('books.approve', compact('book1'), compact('book'));
             
@@ -435,7 +436,7 @@ class AdminController extends Controller
                 //$bk=6;
                 //$ui=4;
                 // dd($request->id2);
-              DB::table('issue_book')->where('user_id', $request->id)->where('book_id', $request->id2)->update([
+              IssueBook::where('user_id', $request->id)->where('book_id', $request->id2)->update([
                     'approve' => $request->approve,
                     'issue_date' => $request->issue_date,
                     'return_date' => $request->return_date,
@@ -468,11 +469,11 @@ class AdminController extends Controller
              $bookId=$request->id2;
              // dd($userId);
             
-                $p=DB::table('issue_book')
-               ->join('books', 'issue_book.book_id', '=', 'books.id')
-               ->join('users', 'issue_book.user_id', '=', 'users.id')
+                $p=IssueBook
+               ::join('books', 'issue_books.book_id', '=', 'books.id')
+               ->join('users', 'issue_books.user_id', '=', 'users.id')
               // ->where("issue_book.approve",'=',"pending")->where('user_id',$userId)
-               ->where("issue_book.approve", '=', "yes")->where('user_id', $userId)->where('book_id', $bookId)
+               ->where("issue_books.approve", '=', "yes")->where('user_id', $userId)->where('book_id', $bookId)
                // ->select( 'issue_book.*', 'users.id AS u_id', 'book.*' ,'issue_book.*' )
                ->get();
             $book= view()->share('p', $p);
@@ -536,7 +537,7 @@ class AdminController extends Controller
                // dd($id2);
               //$userId=auth()->user()->id;
              // dd($userId);
-             $borrow= DB::table('issue_book')->where('user_id', $id)->where('book_id', $id2)->update([
+             $borrow= IssueBook::where('user_id', $id)->where('book_id', $id2)->update([
             'approve'=>"return"
         //'issue_date'=>$request->issue_date,
         //'return_date'=>$request->return_date
@@ -558,10 +559,10 @@ class AdminController extends Controller
     public function returnBookPage()
     {
         try {
-             $books=DB::table('issue_book')
-               ->join('books', 'issue_book.book_id', '=', 'books.id')
-               ->join('users', 'issue_book.user_id', '=', 'users.id')
-               ->where('issue_book.approve', "return")
+             $books=IssueBook
+               ::join('books', 'issue_books.book_id', '=', 'books.id')
+               ->join('users', 'issue_books.user_id', '=', 'users.id')
+               ->where('issue_books.approve', "return")
                // ->select( 'issue_book.*', 'users.id AS u_id', 'book.*' ,'issue_book.*' )
                ->get();
               /*foreach($books as $bk)

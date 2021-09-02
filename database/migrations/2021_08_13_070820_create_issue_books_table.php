@@ -13,7 +13,7 @@ class CreateIssueBookTable extends Migration
      */
     public function up()
     {
-        Schema::create('issue_book', function (Blueprint $table) {
+        Schema::create('issue_books', function (Blueprint $table) {
             $table->id();
             $table->string('user_id');
             $table->string('book_id');
@@ -31,6 +31,6 @@ class CreateIssueBookTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('issue_book');
+        Schema::dropIfExists('issue_books');
     }
 }
