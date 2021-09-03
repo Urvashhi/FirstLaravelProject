@@ -31,11 +31,11 @@
   <center>  <button type="submit"class="btn d-grid btn-danger text-white">  <i class="fa fa-search">Search</i></button></center>
   </div>
   <br>
-       <!--  <div>
+         <div>
                 <span class="paginationtextfield">Show</span>&nbsp;
                 <select id="record_per_page" name="record_per_page">
                     <?php
-           /*         $record_per_page_arr = array("3","5","10","25","50","100","250");
+                    $record_per_page_arr = array("3","5","10","25","50","100","250");
                     foreach ($record_per_page_arr as $nrow) {
                         if (isset($_GET['record_per_page']) && $_GET['record_per_page'] == $nrow) {
                             //$show=$_SESSION['record_per_page']=$show;
@@ -43,7 +43,7 @@
                         } else {
                             echo '<option value="'.$nrow.'">'.$nrow.'</option>';
                         }
-                    }*/
+                    }
                     ?>
                 </select>
                 <span class="paginationtextfield">entries</span>&nbsp;
@@ -62,7 +62,7 @@
 
             });
         });
-        </script>   -->
+        </script>   
 </form>
 <form method="post" action="{{ url('/dashboard') }}" id="form1">
 

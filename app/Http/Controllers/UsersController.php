@@ -10,35 +10,24 @@ use Auth;
 use Hash;
 use DB;
 
+
 class UsersController extends Controller
 {
+	
+	 public function __construct(User $users)
+    {
+        $this->user = $users;
+    }
+	
     public function index(Request $request)
     {
         try {
-            $search=$request->search;
-            //$search=request()->query('search');
-            if (isset($search)) {
-                $record_per_page = isset($request->record_per_page) ? $request->record_per_page : 5;
-                $search_text = $search;
-                //dd($search_text);
-                $books = Book::where('title', 'LIKE', '%'.$search_text.'%')
-                                    ->orWhere('author', 'LIKE', '%'.$search_text.'%')
-                                    ->orWhere('category', 'LIKE', '%'.$search_text.'%')
-                                    ->sortable()
-                                    ->paginate($record_per_page);
-                //dd($books);
-                // Return the search view with the resluts compacted
-                //return view('books.book_list', ['books' => $books]);
+           
+			 $search=$request->search;
+			   $record_per_page = isset($request->record_per_page) ? $request->record_per_page: 3;
+				$books=$this->user->show($search,$record_per_page);
                 return view('visitor.mainpage', ['books' => $books]);
-            } else {
-                $record_per_page = isset($request->record_per_page) ? $request->record_per_page: 5;
-                $books = Book::sortable()->paginate($record_per_page);
-                //  dd($record_per_page);
-                //$books=book::sortable()->paginate(3);
-                //$books=book::sortable()->paginate(5);
-              //  return view('books.book_list', compact('books'));
-                return view('visitor.mainpage', compact('books'));
-            }
+           
         } catch (\Exception $e) {
             return redirect('/home')->with('failLogin', "Fail to get mainpage page.");
         }
@@ -59,32 +48,12 @@ class UsersController extends Controller
     public function dashboard(Request $request)
     {
         try {
-           // $data=['LoggedUserInfo'=>User::where('id', '=', session('LoggedUser'))->first()];
-             $record_per_page = isset($request->record_per_page) ? $request->record_per_page : 5;
-            //dd(session('LoggedUser'));
-                        $search=$request->search;
-            //$search=request()->query('search');
-            if (isset($search)) {
-                $search_text = $search;
-                //dd($search_text);
-                $books = books::where('title', 'LIKE', '%'.$search_text.'%')
-                                    ->orWhere('author', 'LIKE', '%'.$search_text.'%')
-                                    ->orWhere('category', 'LIKE', '%'.$search_text.'%')
-                                    ->sortable()
-                                    ->paginate($record_per_page);
-                //dd($books);
-                // Return the search view with the resluts compacted
-                //return view('books.book_list', ['books' => $books]);
+            $search=$request->search;
+			   $record_per_page = isset($request->record_per_page) ? $request->record_per_page: 3;
+				$books=$this->user->show($search,$record_per_page);
+                
                 return view('visitor.dashboard', ['books' => $books]);
-            } else {
-               // $record_per_page = isset($request->record_per_page) ? $request->record_per_page: 5;
-                $books = books::sortable()->paginate($record_per_page);
-                //  dd($record_per_page);
-                //$books=book::sortable()->paginate(3);
-                //$books=book::sortable()->paginate(5);
-              //  return view('books.book_list', compact('books'));
-                return view('visitor.dashboard', compact('books'));
-            }
+            
            // return view('visitor.dashboard');
         } catch (\Exception $e) {
             return redirect('/home')->with('failLogin', "Fail to get dashboard page.");
@@ -103,7 +72,7 @@ class UsersController extends Controller
                     'email'          => 'required|email',
                     'password'       => 'required|alphaNum|min:8'
                 ]);
-        //try {
+        try {
             //  $user=Users::where('email',$request->input('email'))->get();
             //if(Crypt::decrypt($user[0]->password)==
             $user_data = array(
@@ -127,25 +96,22 @@ class UsersController extends Controller
             //$request->session()->put('users',$data['users']);
             //$remember=$request->get('remember')?true:false;
 */
-            if (Auth::attempt($user_data)) {
-                $remember = $request->remember;
-                    //echo $remember; die();
 
-                if (!empty($remember)) {
-                    setcookie('email', $request->get('email'), time()+60*60*24*15);
-                    setcookie('password', $request->get('password'), time()+60*60*24*15);
-                    Auth::login(Auth::user()->id, true);
-                }
-              //   $user=auth()->user()->id();
-                // dd($user);
-                return redirect('dashboard');
-            } else {
+			if ($this->user->userLogin($user_data)) {
+             
+				 return redirect('dashboard');
+				   } else {
                 return back()->with('error', 'Wrong login details');
             }
+          
+              //   $user=auth()->user()->id();
+                // dd($user);
+               
+         
            // }
-       /* } catch (\Exception $e) {
+        } catch (\Exception $e) {
             return back()->with('failtologin', "Fail to login.");
-        }*/
+        }
     }
     
     
@@ -177,8 +143,8 @@ class UsersController extends Controller
                     
                 ]);
                 
-        try {
-            DB::table('users')->insert([
+        //try {
+           $user=([
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
                 'email' => $request->email,
@@ -193,17 +159,18 @@ class UsersController extends Controller
                     
                     
             ]);
-                
+			//dd($user);
+                 $this->user->userCreate($user);
             return redirect('/login')->with('success', "Your account has been created successfully.");
-        } catch (\Exception $e) {
+        /*} catch (\Exception $e) {
             return back()->with('failtores', "Fail to registration.");
-        }
+        }*/
     }
     
     public function editProfile($id)
     {
         try {
-            $user = DB::table('users')->where('id', $id)->first();//or firstOrFail
+            $user = $this->user->userEdit($id);//or firstOrFail
             return view('visitor.edit_profile', compact('user'));//shows error but not in detail
         } catch (\Exception $e) {
             return redirect('dashboard')->with('failtoedit', "Fail to edit data.");
@@ -213,7 +180,7 @@ class UsersController extends Controller
     public function updateUserData(Request $request)
     {
         
-        /*if($request->password)
+        if($request->password)
         {
             $this->validate($request,[
                 'first_name'     => 'required',
@@ -230,7 +197,7 @@ class UsersController extends Controller
 
             ]);
             try{
-                    DB::table('users')->where('id', $request->id)->update([
+                 $user=([
                         'first_name'     => $request->first_name,
                         'last_name'      => $request->last_name,
                         'email'          => $request->email,
@@ -243,6 +210,8 @@ class UsersController extends Controller
                         'state'          => $request->state,
                         'pincode'       => $request->pincode,
                     ]);
+						$id=$request->id;
+				 $this->user->userUpdate($user,$id);
                 }
                 catch(\Exception $e)
                 {
@@ -250,7 +219,7 @@ class UsersController extends Controller
                 }
         }
         else
-        {*/
+        {
                     $this->validate($request, [
                     'first_name'        => 'required',
                     'last_name'         => 'required',
@@ -265,24 +234,26 @@ class UsersController extends Controller
                     'pincode'           => 'required'
                     
                     ]);
-        try {
-            DB::table('users')->where('id', $request->id)->update([
-                'first_name'     => $request->first_name,
-                'last_name'      => $request->last_name,
-                'email'          => $request->email,
-                //'password' => Hash::make($request->password),
-                'gender'        => $request->gender,
-                'mobile_no'  => $request->mobile_no,
-                'birthdate' => $request->birthdate,
-                'address' => $request->address,
-                'city' => $request->city,
-                'state' => $request->state,
-                'pincode' => $request->pincode,
-            ]);
-        } catch (\Exception $e) {
-            return redirect('/dashboard')->with('failtoupdate', "Fail to update data.");
+				try {
+					$user=([
+						'first_name'     => $request->first_name,
+						'last_name'      => $request->last_name,
+						'email'          => $request->email,
+						//'password' => Hash::make($request->password),
+						'gender'        => $request->gender,
+						'mobile_no'  => $request->mobile_no,
+						'birthdate' => $request->birthdate,
+						'address' => $request->address,
+						'city' => $request->city,
+						'state' => $request->state,
+						'pincode' => $request->pincode,
+					]);
+					$id=$request->id;
+						 $this->user->userUpdate($user,$id);
+				} catch (\Exception $e) {
+					return redirect('/dashboard')->with('failtoupdate', "Fail to update data.");
+				}
         }
-        //}
                     //return redirect('admin/edit_book');
                     return back()->with('updateUser', "Your profile has been updated successfully");
                     //return back()->with('bookupdate',"Book data updated successfully")->with('image',$imageName);

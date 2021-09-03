@@ -1,7 +1,7 @@
 <?php
-use App\Http\Controllers\CartController;
+use App\Http\Controllers\CartsController;
 
-$total = CartController::cartItem();
+$total = CartsController::cartItem();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -72,7 +72,7 @@ $total = CartController::cartItem();
 
             </ul>
             
-            <li><a href="cart_log">Cart({{ $total }})</a></li>
+            <li><a href="/cart_log">Cart({{ $total }})</a></li>
           </li>
           <li></li>
        </ul>

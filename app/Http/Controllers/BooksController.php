@@ -1,9 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
-
 use App\Models\Book;
 use App\Models\Cart;
 //use App\Models\borrow;
@@ -15,11 +13,9 @@ use Illuminate\Database\Eloquent\Collection;
 //use Maatwebsite\Excel\Facades\Concerns\FromCollection;
 use App\Imports\BookImport;
 //use Illuminate\Database\Query\Builder;
-
 use DB;
-
 use PDF;
-
+//use App\Repositories\UserRepository;
 //use File;
 use Illuminate\Filesystem\Filesystem;
 
@@ -27,7 +23,19 @@ class BooksController extends Controller
 {
 	
 	
-	
+	 //protected $users;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @param  UserRepository  $users
+     * @return void
+     */
+    public function __construct(Book $books)
+    {
+        $this->book = $books;
+    }
+
     public function addBook()
     {
         try {
@@ -53,7 +61,7 @@ class BooksController extends Controller
                     'image'         => 'required|image|mimes:jpeg,png,jpg',
                     
                 ]);
-       // try {
+        try {
                 $imageName = time().'.'.$request->image->extension();
                 //dd($imageName);
                 $abc=$request->image->move('upload/', $imageName);
@@ -73,12 +81,12 @@ class BooksController extends Controller
                     
                 ]);
 				
-			   $book_ob=new Book;
-				$book_ob->store_book($book);
+			
+				$this->book->storeBook($book);
                 return back()->with('success', "Book inserted successfully.");
-        /*} catch (\Exception $e) {
+		} catch (\Exception $e) {
             return back()->with('error', "Fail to insert Book.");
-        }*/
+        }
     }
     
     public function bookList(Request $request)
@@ -110,22 +118,28 @@ class BooksController extends Controller
         } catch (\Exception $e) {
             return view('books.notfound');
         }*/
-		$b=new Book;
-		 $search=$request->search;
-		   $record_per_page = isset($request->record_per_page) ? $request->record_per_page: 3;
-		$books=$b->show($search,$record_per_page);
-		//dd($books);
-		 return view('books.book_list', compact('books'));
+		//$b=new Book;
+		try{
+			 $search=$request->search;
+			   $record_per_page = isset($request->record_per_page) ? $request->record_per_page: 3;
+				$books=$this->book->show($search,$record_per_page);
+			//dd($books);
+				return view('books.book_list', compact('books'));
+		   } catch (\Exception $e) {
+				return view('books.notfound');
+			}
     }
     
     public function editBook($id)
     {
         try {
-            $book = Book::where('id', $id)->first();//too see exception write firstOrFail
-        } catch (\Exception $e) {
+           
+			$book=$this->book->bookEdit($id);
+			 return view('books.edit_book', compact('book'));
+		} catch (\Exception $e) {
             return back()->with('editid', "id not found ");
         }
-        return view('books.edit_book', compact('book'));
+       
     }
     
     public function updateBook(Request $request)
@@ -166,8 +180,8 @@ class BooksController extends Controller
                     'image'         => $request->image
                 ]);
 				$id=$request->id;
-				$book_update=new book;
-				$book_update->boo_update($data,$id);
+				//$book_update=new Book;
+				$this->book->updateBook($data,$id);
             } catch (\Exception $e) {
                  return back()->with('error', "Fail to update Book.");
             }
@@ -191,7 +205,7 @@ class BooksController extends Controller
                 // $path=$request->image->move(public_path('upload/'), $imageName);
                
                 //$request->image=$imageName;
-          //  try {
+           try {
                  $data=([
                     'isbn'          => $request->isbn,
                     'title'         => $request->title,
@@ -206,11 +220,11 @@ class BooksController extends Controller
                     ]);
 					$id=$request->id;
 				//	dd($id);
-				$book_update=new book;
-				$book_update-> update_book($data,$id);
-         /*   } catch (\Exception $e) {
+				//$book_update=new book;
+				$this->book-> updateBook($data,$id);
+          } catch (\Exception $e) {
                 return back()->with('success', "Fail to update Book.");
-            }*/
+            }
                 return back()->with('error', "Book data updated successfully");
         }
                 //return redirect('admin/edit_book');
@@ -221,14 +235,14 @@ class BooksController extends Controller
     public function deleteBook($id)
     {
         try {
-                $books = Book::find($id);
+                $books = $this->book::find($id);
 				//dd($books);
                 //$file_name = $request->image;
                 $file_name = $books->image;
                 //$imageName =  $request->image;
                 $path=public_path('upload/'.$file_name);
-                $book =new Book;
-				$book->delete_book($id);
+               // $book =new Book;
+				$this->book->deleteBook($id);
                 unlink($path);
                 return back()->with('success', "Book deleted successfully");
         } catch (\Exception $e) {
@@ -308,7 +322,10 @@ class BooksController extends Controller
     public function singleBook($id)
     {
         try {
-             $book =Book::where('id', $id)->first();
+			
+			//dd($id);
+             $book =$this->book->bookSingle($id);
+			 
             //$data=['LoggedUserInfo'=>User::where('id', '=', session('LoggedUser'))->first()];
             //dd(session('LoggedUser'));
             return view('visitor.singleBook', compact('book'));
@@ -322,7 +339,7 @@ class BooksController extends Controller
     {
         try {
               $userId=auth()->user()->id;
-               $books=IssueBook
+               $books=$this->book
                ::join('books', 'issue_book.book_id', '=', 'books.id')
                ->where('issue_book.user_id', $userId)
                ->get();

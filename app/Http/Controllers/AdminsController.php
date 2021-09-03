@@ -18,6 +18,11 @@ use Mail;
 
 class AdminsController extends Controller
 {
+	  public function __construct(User $users)
+    {
+        $this->user = $users;
+    }
+	
     public function mainpage()
     {
         try {
@@ -61,28 +66,13 @@ class AdminsController extends Controller
                 
                         //Auth::logout();
                     
-            if (Auth::attempt($user_data)) {
-                  $remember = $request->remember;
-                 //echo $remember; die();
-                if (!empty($remember)) {
-                    setcookie('email', $request->get('email'), time()+60*60*24*15);
-                    setcookie('password', $request->get('password'), time()+60*60*24*15);
-                    //Auth::login(Auth::user()->id,true);
-                }
-                  //$minute=15;
-                  /*$response=new Response("hello");
-                  //$email=$request->cookie('email');
-                  //$password=$request->cookie('password');
-                  $response->withCookie(cookie('email',$request->email,$minute));
-
-                  $response->withCookie(cookie('password',$request->password,$minute));
-                  */
-                if (auth()->user()->is_admin == 1) {
-                    //$request->session()->put('LoggedAdmin', $userInfo->id);
-                        
-                    //$request->session()->put('LoggedAdminName', $userInfo->first_name);
+          if ($this->user->userLogin($user_data)) {
+             
+				 if ($this->user->checkAdmin()) {
+                   
                     return redirect("/successlogin");
-                } else {
+				   }
+				else {
                     return redirect("/home")->with("error", "You have no right to login in admin panel.");
                 }
             } else {
@@ -153,22 +143,15 @@ class AdminsController extends Controller
           //  $data=['LoggedAdminInfo'=>User::where('id', '=', session('LoggedAdmin'))->first()];
             
             $record_per_page = isset($request->record_per_page) ? $request->record_per_page : 3;
-            if ($request->search_user) {
+            //if ($request->search_user) {
                 //return redirect('/search_user');
                 $search_text = $request->search_user;
-                $user = User::where('first_name', 'LIKE', '%'.$search_text.'%')
-                                ->orWhere('email', 'LIKE', '%'.$search_text.'%')
-                                ->orWhere('mobile_no', 'LIKE', '%'.$search_text.'%')
-                                ->orWhere('birthdate', 'LIKE', '%'.$search_text.'%')
-                                ->orWhere('city', 'LIKE', '%'.$search_text.'%')
-                                ->orWhere('state', 'LIKE', '%'.$search_text.'%')
-                                ->sortable()
-                                ->paginate($record_per_page);
-                return view('admin.user_profile', ['users' => $user], $data);
-            } else {
-                $users = User::sortable()->paginate($record_per_page);
+                $user = $this->user->userData($search_text,$record_per_page);
+                return view('admin.user_profile', ['users' => $user]);
+          /*  } else {
+                $users =  $this->user->userData($search_text,$record_per_page);;
                 return view('admin.user_profile', compact('users'));
-            }
+            }*/
         } catch (\Exception $e) {
             return redirect('/user_profile')->with('error', "Fail to show data.");
         }
@@ -179,7 +162,7 @@ class AdminsController extends Controller
         try {
            // $data=['LoggedAdminInfo'=>User::where('id', '=', session('LoggedAdmin'))->first()];
             
-            $user =User::where('id', $id)->first();//or firstOrFail
+            $user = $this->user->userEdit($id);//or firstOrFail
             //return view('admin.edit_user','.id not found');
             return view('admin.edit_user', compact('user'));//shows error but not in detail
         } catch (\Exception $e) {
@@ -205,7 +188,7 @@ class AdminsController extends Controller
                 
             ]);
             try {
-                User::where('id', $request->id)->update([
+                $user=([
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'email' => $request->email,
@@ -218,8 +201,10 @@ class AdminsController extends Controller
                     'state' => $request->state,
                     'pincode' => $request->pincode,
                 ]);
-            } catch (\Exception $e) {
-                return redirect('user_profile')->with('failtouseredit', "Fail to update user.");
+				$id=$request->id;
+				 $this->user->userUpdate($user,$id);
+           } catch (\Exception $e) {
+                return redirect('user_profile')->with('error', "Fail to update user.");
             }
         } else {
             $this->validate($request, [
@@ -236,8 +221,8 @@ class AdminsController extends Controller
             'pincode'    => 'required'
             
             ]);
-            try {
-                   User::where('id', $request->id)->update([
+           try {
+                   $user=([
                         'first_name' => $request->first_name,
                         'last_name' => $request->last_name,
                         'email' => $request->email,
@@ -249,9 +234,11 @@ class AdminsController extends Controller
                         'city' => $request->city,
                         'state' => $request->state,
                         'pincode' => $request->pincode,
-                    ]);
+                    ]); 
+					$id=$request->id;
+					$this->user->userUpdate($user,$id);
             } catch (\Exception $e) {
-                return redirect('user_profile')->with('failtouseredit', "Fail to update user.");
+                return redirect('user_profile')->with('error', "Fail to update user.");
             }
         }
             //return redirect('admin/edit_book');
@@ -264,8 +251,8 @@ class AdminsController extends Controller
         try {
             //$data=['LoggedAdminInfo'=>User::where('id', '=', session('LoggedAdmin'))->first()];
             
-            $users = User::find($id);
-            $book = User::where('id', $id)->delete();
+            $users = $this->user::find($id);
+            $book = $this->user->userDelete($id);
             return back()->with('success', "User deleted successfully");
         } catch (\Exception $e) {
             return back()->with('error', "Fail to delete user.");

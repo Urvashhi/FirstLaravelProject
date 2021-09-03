@@ -22,7 +22,7 @@ class Book extends Model
                
 				 $record_per_page = isset($record_per_page) ? $record_per_page: 3;
 					
-				$books = book::where('title', 'LIKE', '%'.$search_text.'%')
+				$books = $this->where('title', 'LIKE', '%'.$search_text.'%')
                                     ->orWhere('description', 'LIKE', '%'.$search_text.'%')
                                     ->orWhere('id', 'LIKE', '%'.$search_text.'%')
                                     ->orWhere('category', 'LIKE', '%'.$search_text.'%')
@@ -36,17 +36,25 @@ class Book extends Model
             }
 	 }
 	 
-	 public function store_book($book){
-		Book::create($book);
+	 public function storeBook($book){
+		$this->create($book);
 	 }
 
-	public function update_book($data,$id){
-		Book::where('id', $id)->update($data);
+	public function updateBook($data,$id){
+		$this->where('id', $id)->update($data);
 	 }
 	
-	public function delete_book($id){
-		Book::where('id', $id)->delete();
+	public function deleteBook($id){
+		
+		$this->where('id', $id)->delete();
 	 }
 
- 
+	public function bookEdit($id){
+		  $book= $this->where('id', $id)->first();
+		  return $book;
+   }
+	
+	public function bookSingle($id){
+		return $this->where('id', $id)->first();
+	}
 }
