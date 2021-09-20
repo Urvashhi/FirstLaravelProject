@@ -7,7 +7,11 @@ use App\Models\Book;
 
 class Carts extends Controller
 {
-   
+   public function user()
+	{
+		return $this->belongsTo('App\Models\User');
+	}
+	
     
     public function cart()
     {

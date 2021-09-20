@@ -7,9 +7,10 @@ use App\Http\Controllers\PDFController;
 //use App\Http\Controllers\ExportBook;
 use App\Http\Controllers\ExportByDate;
 use App\Http\Controllers\ApiCheck;
-use App\Http\Controllers\UserApiController;
-use App\Http\Controllers\BookApiController;
-use App\Http\Controllers\CartApiController;
+use App\Http\Controllers\UsersApiController;
+use App\Http\Controllers\BooksApiController;
+use App\Http\Controllers\CartsApiController;
+use App\Http\Controllers\IssueBooksApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,24 +31,27 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::get('/api_check', [ApiCheck::class,'index']);
 Route::post('/api_login', [ApiCheck::class,'login']);
 Route::post('/save', [ApiCheck::class,'res']);
-
-
 Route::post('/try', [UserApiController::class,'index']);
 
-Route::get('/home', [UserApiController::class,'index']);
-Route::post('/login', [UserApiController::class,'login']);
-Route::post('/register', [UserApiController::class,'resval']);
-Route::post('/edit/{id}', [UserApiController::class,'edit']);
-Route::put('/update', [UserApiController::class,'update']);
-Route::post('/update_password', [UserApiController::class,'updateUserPassword']);
-Route::delete('/delete/{id}', [UserApiController::class,'delete']);
-Route::get('/search/{name}', [UserApiController::class,'search']);
 
-Route::post('/book_index', [BookApiController::class,'index']);
-Route::get('/single_book/{id}', [BookApiController::class,'singleBook']);
-Route::post('/borrow_now', [BookApiController::class,'borrowNow']);
+Route::get('/home', [UsersApiController::class,'index'])->middleware('auth:sanctum');
+Route::post('/login', [UsersApiController::class,'login']);
+Route::post('/register', [UsersApiController::class,'resval']);
+Route::post('/edit/{id}', [UsersApiController::class,'edit'])->middleware('auth:sanctum');
+Route::put('/update', [UsersApiController::class,'update'])->middleware('auth:sanctum');
+Route::post('/update_password', [UsersApiController::class,'updateUserPassword'])->middleware('auth:sanctum');
+Route::post('/logout', [UsersApiController::class,'logout'])->middleware('auth:sanctum');
+//Route::delete('/delete/{id}', [UsersApiController::class,'delete']);
+//Route::get('/search/{name}', [UsersApiController::class,'search']);
 
-Route::post('/add_to_cart', [CartApiController::class,'addToCart']);
-Route::post('/cart_item', [CartApiController::class,'cartItem']);
-Route::get('/cart_list', [CartApiController::class,'cart']);
-Route::post('/remove/{id}', [CartApiController::class,'remove']);
+Route::post('/book_index', [BooksApiController::class,'index'])->name('book_index')->middleware('auth:sanctum');
+Route::get('/single_book/{id}', [BooksApiController::class,'singleBook'])->middleware('auth:sanctum');
+Route::post('/borrow_now', [BooksApiController::class,'borrowNow'])->middleware('auth:sanctum');
+
+Route::post('/add_to_cart', [CartsApiController::class,'addToCart'])->middleware('auth:sanctum');
+Route::post('/cart_item', [CartsApiController::class,'cartItem'])->middleware('auth:sanctum');
+Route::get('/cart_list', [CartsApiController::class,'cart'])->middleware('auth:sanctum');
+Route::post('/remove/{id}', [CartsApiController::class,'remove'])->middleware('auth:sanctum');
+
+Route::get('/borrow_list', [IssueBooksApiController::class,'borrowBookList'])->middleware('auth:sanctum');
+Route::post('/borrowNow', [IssueBooksApiController::class,'borrowNow'])->middleware('auth:sanctum');

@@ -61,6 +61,8 @@
 									@else
 										 <td><label>Out of stock</label></td>
 									 @endif
+								<!--	 <td><a href="borrow_noww/{{$book->id}}" class="btn btn-success">Borrow</a></td>-->
+                                       
 									<td><a href="remove_log/{{$book->cart_id}}" class="btn btn-danger">Remove From Cart</a></td></tr>
                                        
 										 @endforeach

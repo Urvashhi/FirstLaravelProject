@@ -1,33 +1,48 @@
 <?php
+// phpcs:ignoreFile
 
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Book;
 use App\Models\User;
+use App\Models\Cart;
 use Validator;
 use Auth;
 use Hash;
 use DB;
-
+use URL;
+use Redirect;
 
 class UsersController extends Controller
 {
-	
-	 public function __construct(User $users)
+    
+    public function __construct(User $users)
     {
         $this->user = $users;
     }
+    
 	
-    public function index(Request $request)
+	
+	public function check()
+	{
+		return Cart::with('carts')->find(3);
+	}
+	/*public function check(){
+		return
+		User::select('first_name', 'last_name', 'email')
+		->where('id', 1)
+		->get()
+		->toArray();
+    }*/
+	
+	public function index(Request $request)
     {
         try {
-           
-			 $search=$request->search;
-			   $record_per_page = isset($request->record_per_page) ? $request->record_per_page: 3;
-				$books=$this->user->show($search,$record_per_page);
+             $search=$request->search;
+               $record_per_page = isset($request->record_per_page) ? $request->record_per_page: 3;
+                $books=$this->user->show($search, $record_per_page);
                 return view('visitor.mainpage', ['books' => $books]);
-           
         } catch (\Exception $e) {
             return redirect('/home')->with('failLogin', "Fail to get mainpage page.");
         }
@@ -49,8 +64,8 @@ class UsersController extends Controller
     {
         try {
             $search=$request->search;
-			   $record_per_page = isset($request->record_per_page) ? $request->record_per_page: 3;
-				$books=$this->user->show($search,$record_per_page);
+               $record_per_page = isset($request->record_per_page) ? $request->record_per_page: 3;
+                $books=$this->user->show($search, $record_per_page);
                 
                 return view('visitor.dashboard', ['books' => $books]);
             
@@ -80,6 +95,8 @@ class UsersController extends Controller
                 'password' => $request->get('password')
             );
             
+               $remember_me = $request->get('remember_me') ? true : false;
+    //dd($remember_me);
            /* $userInfo = User::where('email', '=', $request->email)->first();
             //DD(id);
             if (!$userInfo) {
@@ -97,10 +114,10 @@ class UsersController extends Controller
             //$remember=$request->get('remember')?true:false;
 */
 
-			if ($this->user->userLogin($user_data)) {
-             
-				 return redirect('dashboard');
-				   } else {
+            if ($this->user->userLogin($user_data, $remember_me)) {
+                 //return URL::to('dashboard1');
+                return redirect('dashboard');
+            } else {
                 return back()->with('error', 'Wrong login details');
             }
           
@@ -143,8 +160,8 @@ class UsersController extends Controller
                     
                 ]);
                 
-        //try {
-           $user=([
+        try {
+            $user=([
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
                 'email' => $request->email,
@@ -159,12 +176,12 @@ class UsersController extends Controller
                     
                     
             ]);
-			//dd($user);
+            //dd($user);
                  $this->user->userCreate($user);
             return redirect('/login')->with('success', "Your account has been created successfully.");
-        /*} catch (\Exception $e) {
+        } catch (\Exception $e) {
             return back()->with('failtores', "Fail to registration.");
-        }*/
+        }
     }
     
     public function editProfile($id)
@@ -180,9 +197,8 @@ class UsersController extends Controller
     public function updateUserData(Request $request)
     {
         
-        if($request->password)
-        {
-            $this->validate($request,[
+        if ($request->password) {
+            $this->validate($request, [
                 'first_name'     => 'required',
                 'last_name'      => 'required',
                 'email'          => 'required|email',
@@ -196,7 +212,7 @@ class UsersController extends Controller
                 'pincode'        => 'required'
 
             ]);
-            try{
+            try {
                  $user=([
                         'first_name'     => $request->first_name,
                         'last_name'      => $request->last_name,
@@ -210,16 +226,12 @@ class UsersController extends Controller
                         'state'          => $request->state,
                         'pincode'       => $request->pincode,
                     ]);
-						$id=$request->id;
-				 $this->user->userUpdate($user,$id);
-                }
-                catch(\Exception $e)
-                {
-                    return redirect('/dashboard')->with('failtoupdate',"Fail to update data.");
-                }
-        }
-        else
-        {
+                        $id=$request->id;
+                 $this->user->userUpdate($user, $id);
+            } catch (\Exception $e) {
+                return redirect('/dashboard')->with('failtoupdate', "Fail to update data.");
+            }
+        } else {
                     $this->validate($request, [
                     'first_name'        => 'required',
                     'last_name'         => 'required',
@@ -234,25 +246,25 @@ class UsersController extends Controller
                     'pincode'           => 'required'
                     
                     ]);
-				try {
-					$user=([
-						'first_name'     => $request->first_name,
-						'last_name'      => $request->last_name,
-						'email'          => $request->email,
-						//'password' => Hash::make($request->password),
-						'gender'        => $request->gender,
-						'mobile_no'  => $request->mobile_no,
-						'birthdate' => $request->birthdate,
-						'address' => $request->address,
-						'city' => $request->city,
-						'state' => $request->state,
-						'pincode' => $request->pincode,
-					]);
-					$id=$request->id;
-						 $this->user->userUpdate($user,$id);
-				} catch (\Exception $e) {
-					return redirect('/dashboard')->with('failtoupdate', "Fail to update data.");
-				}
+            try {
+                $user=([
+                    'first_name'     => $request->first_name,
+                    'last_name'      => $request->last_name,
+                    'email'          => $request->email,
+                    //'password' => Hash::make($request->password),
+                    'gender'        => $request->gender,
+                    'mobile_no'  => $request->mobile_no,
+                    'birthdate' => $request->birthdate,
+                    'address' => $request->address,
+                    'city' => $request->city,
+                    'state' => $request->state,
+                    'pincode' => $request->pincode,
+                ]);
+                $id=$request->id;
+                     $this->user->userUpdate($user, $id);
+            } catch (\Exception $e) {
+                return redirect('/dashboard')->with('failtoupdate', "Fail to update data.");
+            }
         }
                     //return redirect('admin/edit_book');
                     return back()->with('updateUser', "Your profile has been updated successfully");
@@ -298,13 +310,11 @@ class UsersController extends Controller
             } else {
                 return redirect()->back()->with('error', 'Old password does not matched.');
             }*/
-             $current_user = auth()->user();
-            if (Hash::check($request->old_password, $current_user->password)) {
-                //dd($user->password);
-                  $current_user->update([
-                'password'=>bcrypt($request->new_password)
-                  ]);
-                //dd($current_user);
+            
+                $newPassword=$request->new_password;
+                $oldPassword=$request->old_password;
+             $currentUser = auth()->user();
+            if ($this->user->changePassword($currentUser, $newPassword, $oldPassword)) {
                 return redirect()->back()->with('success', 'Password successfuly updated.');
             } else {
                 return redirect()->back()->with('error', 'Old password does not matched.');
@@ -326,7 +336,7 @@ class UsersController extends Controller
             //    session()->pull('LoggedUser');
             //    return redirect('/home');
             //}
-            Auth::logout();
+            $this->user->logoutUser();
             return redirect('/home');
         } catch (\Exception $e) {
             return redirect('/dashboard')->with('failtoupdate', "Fail to logout.");

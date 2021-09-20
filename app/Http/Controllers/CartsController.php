@@ -16,39 +16,44 @@ class CartsController extends Controller
     {
         $this->cartBook = $cartBooks;
     }
-	
+    
     public function cart()
     {
             $userId=auth()->user()->id;
-            $books=$this->cartBook->show($userId); 
+            $books=$this->cartBook->show($userId);
             return view('books.cartForm', ['books'=>$books]);
-       
-	}
+    }
     
     public function addToCart(Request $request)
     {
              $book_id=$request->id;
              $request->session()->put('bookId', $book_id);
              $userId=auth()->user()->id;
+              $request->session()->put('userId', $userId);
             $data=([
-				'book_id' => $book_id,
-				'user_id' => $userId
-				]);
-				
-            
-			$this->cartBook->addBookToCart($data,$book_id,$userId);
-			/*if($count){
-				redirect('dashboard')->with('error', "Book is already in cart");
-				}*/
-					
-			 return redirect('dashboard')->with('success', "Book added to cart successfully");
+                'book_id' => $book_id,
+                'user_id' => $userId
+                ]);
+                 $count = $this->cartBook->where('book_id', $book_id)->count();
+             //  dd($count);
+                $ct = $this->cartBook->where('user_id', $userId)->count();
+        if ($count >= 1 && $ct > 0) {
+               return redirect('dashboard')->with('error', "Book is already in cart");
+        }
+                    
+            $this->cartBook->addBookToCart($data, $book_id);
+            /*if($count){
+                redirect('dashboard')->with('error', "Book is already in cart");
+                }*/
+                    
+             return redirect('dashboard')->with('success', "Book added to cart successfully");
     }
     
     static function cartItem()
     {
         //echo "sjdggsew";
        // $userId=auth()->user()->id;
-		//$this->cartBook->cartItems($userId);
+        //$this->cartBook->cartItems($userId);
          $userId=auth()->user()->id;
         return Cart::where('user_id', $userId)->count();
     }
@@ -67,17 +72,17 @@ class CartsController extends Controller
         
         /*$users = DB::table('books')->get();
 
-		foreach ($users as $user)
-		{
-			var_dump($user->id);
-		}*/
+        foreach ($users as $user)
+        {
+            var_dump($user->id);
+        }*/
            // dd(Session::get('bookId'));
     
         //dd( Session::get('bookId'));
                 //$query = DB::table('books')->latest('id');
-                $this->cartBook->removeBook($id); 
+           $bookId= Session::get('bookId');
+                $this->cartBook->removeBook($id, $bookId);
                
                 return redirect('cart_log')->with('success', "Book removed successfully");
-      
     }
 }

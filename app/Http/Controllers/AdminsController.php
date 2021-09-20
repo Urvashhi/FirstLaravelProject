@@ -18,11 +18,11 @@ use Mail;
 
 class AdminsController extends Controller
 {
-	  public function __construct(User $users)
+    public function __construct(User $users)
     {
         $this->user = $users;
     }
-	
+    
     public function mainpage()
     {
         try {
@@ -66,13 +66,10 @@ class AdminsController extends Controller
                 
                         //Auth::logout();
                     
-          if ($this->user->userLogin($user_data)) {
-             
-				 if ($this->user->checkAdmin()) {
-                   
+            if ($this->user->userLogin($user_data)) {
+                if ($this->user->checkAdmin()) {
                     return redirect("/successlogin");
-				   }
-				else {
+                } else {
                     return redirect("/home")->with("error", "You have no right to login in admin panel.");
                 }
             } else {
@@ -119,13 +116,10 @@ class AdminsController extends Controller
            'confirm_password'      => 'required|alphaNum|same:new_password'
         ]);
         try {
-                $current_user = auth()->user();
-                //dd($current_user);
-            if (Hash::check($request->old_password, $current_user->password)) {
-                //dd($current_user);
-                $current_user->update([
-                'password'=>bcrypt($request->new_password)
-                ]);
+            $newPassword=$request->new_password;
+                $oldPassword=$request->old_password;
+             $currentUser = auth()->user();
+            if ($this->user->changePassword($currentUser, $newPassword, $oldPassword)) {
                 //dd($current_user);
                 return redirect()->back()->with('success', 'Password successfuly updated.');
             } else {
@@ -146,7 +140,7 @@ class AdminsController extends Controller
             //if ($request->search_user) {
                 //return redirect('/search_user');
                 $search_text = $request->search_user;
-                $user = $this->user->userData($search_text,$record_per_page);
+                $user = $this->user->userData($search_text, $record_per_page);
                 return view('admin.user_profile', ['users' => $user]);
           /*  } else {
                 $users =  $this->user->userData($search_text,$record_per_page);;
@@ -201,9 +195,9 @@ class AdminsController extends Controller
                     'state' => $request->state,
                     'pincode' => $request->pincode,
                 ]);
-				$id=$request->id;
-				 $this->user->userUpdate($user,$id);
-           } catch (\Exception $e) {
+                $id=$request->id;
+                 $this->user->userUpdate($user, $id);
+            } catch (\Exception $e) {
                 return redirect('user_profile')->with('error', "Fail to update user.");
             }
         } else {
@@ -221,7 +215,7 @@ class AdminsController extends Controller
             'pincode'    => 'required'
             
             ]);
-           try {
+            try {
                    $user=([
                         'first_name' => $request->first_name,
                         'last_name' => $request->last_name,
@@ -234,9 +228,9 @@ class AdminsController extends Controller
                         'city' => $request->city,
                         'state' => $request->state,
                         'pincode' => $request->pincode,
-                    ]); 
-					$id=$request->id;
-					$this->user->userUpdate($user,$id);
+                    ]);
+                    $id=$request->id;
+                    $this->user->userUpdate($user, $id);
             } catch (\Exception $e) {
                 return redirect('user_profile')->with('error', "Fail to update user.");
             }
@@ -268,303 +262,11 @@ class AdminsController extends Controller
                 session()->pull('LoggedAdmin');
                 return redirect('/admin');
             }*/
-            Auth::logout();
+            $this->user->logoutUser();
             return redirect('/admin');
         } catch (\Exception $e) {
             return redirect('/successlogin')->with('error', "Fail to logout.");
         }
         //return redirect('/admin');
-    }
-    
-    public function requestBook()
-    {
-        try {
-               $books=IssueBook
-               ::join('books', 'issue_books.book_id', '=', 'books.id')
-               ->join('users', 'issue_books.user_id', '=', 'users.id')
-               ->where('issue_book.approve', "pending")
-               // ->select( 'issue_book.*', 'users.id AS u_id', 'book.*' ,'issue_book.*' )
-               ->get();
-              /*foreach($books as $bk)
-               {
-
-                    //   session('bookid', $bk->b_id);
-
-                    session()->put('userId', $bk->id);
-                    //session('userid', $bk->id);
-               }*/
-              
-            return view('books.requestBook', ['issue_book'=>$books]);
-        } catch (\Exception $e) {
-            return back()->with('faildelete', "Fail to get request Book.");
-        }
-    }
-    
-    
-    public function borrowBookList()
-    {
-        try {
-               $books=IssueBook
-               ::join('books', 'issue_books.book_id', '=', 'books.id')
-               ->join('users', 'issue_books.user_id', '=', 'users.id')
-               ->where('issue_books.approve', "yes")
-               // ->select( 'issue_book.*', 'users.id AS u_id', 'book.*' ,'issue_book.*' )
-               ->get();
-              /*foreach($books as $bk)
-               {
-
-                    //   session('bookid', $bk->b_id);
-
-                    session()->put('userId', $bk->id);
-                    //session('userid', $bk->id);
-               }*/
-              
-            return view('books.borrowBook', ['issue_book'=>$books]);
-        } catch (\Exception $e) {
-            return back()->with('faildelete', "Fail to get request Book.");
-        }
-    }
-    
-    public function returnBookList()
-    {
-       try {
-               $books=IssueBook
-               ::join('books', 'issue_books.book_id', '=', 'books.id')
-               ->join('users', 'issue_books.user_id', '=', 'users.id')
-               ->where('issue_books.approve', "return")
-               // ->select( 'issue_book.*', 'users.id AS u_id', 'book.*' ,'issue_book.*' )
-               ->get();
-              /*foreach($books as $bk)
-               {
-
-                    //   session('bookid', $bk->b_id);
-
-                    session()->put('userId', $bk->id);
-                    //session('userid', $bk->id);
-               }*/
-              
-            return view('books.returnBook', ['issue_book'=>$books]);
-        } catch (\Exception $e) {
-            return redirect('successlogin')->with('error', "Fail to get return Book.");
-        }
-    }
-        
-    /*public function issue_id($id)
-    {
-        try {
-            $books = DB::table('issue_book')->where('id', $id)->first();//too see exception write firstOrFail
-              return view('books.approve', compact('books'));
-      } catch (\Exception $e) {
-            return back()->with('editid', "id not found ");
-        }
-
-    }*/
-    
-    public function approvePage($id, $id2)
-    {
-        try {
-        //dd($request->session()->put('bookId', $request->b_id));
-                            $book1 = Book::where('id', $id2)->first();//or firstOrFail
-                     $book =User::where('id', $id)->first();//or firstOrFail
-            //return view('admin.edit_user','.id not found');
-            return view('books.approve', compact('book1'), compact('book'));
-            
-            ///$books = DB::table('issue_book')->where('id', $id)->first();//too see exception write firstOrFail
-            //return view('books.approve');
-           // $request->session()->put('userId', $book->id);
-            //$request->session()->put('bookid', $book->b_id);
-                            /*
-                                $books=DB::table('issue_book')
-               ->join('books', 'issue_book.book_id', '=', 'books.b_id')
-               ->join('users', 'issue_book.user_id', '=', 'users.id')
-               // ->select( 'issue_book.*', 'users.id AS u_id', 'book.*' ,'issue_book.*' )
-               ->get();
-            /*  foreach($books as $bk)
-               {
-
-                   // session('bookid', $bk->b_id);
-
-                    session()->put('userId', $bk->id);
-                    //session('userid', $bk->id);
-               }*/
-            //return view('books.approve');
-        } catch (\Exception $e) {
-            return back()->with('error', "Error to get approve page.");
-        }
-    }
-    
-    public function approveRequest(Request $request)
-    {
-        try {
-            //dd($request->id);
-         //   $request->session()->put('userId', $book->id);
-                        //  $request->session()->put('bookid', $book->b_id);
-         //$bk=Session('bookId');
-         //dd($bk);
-            //$id=$request->b_id;
-            //dd($b_id);
-            //$bk=Session('bookId');
-           //dd($bk);
-           //$ui=Session::get('userId');
-            //   dd($ui);
-            //dd($_GET['book_id']);
-            //dd(request('book_id'));;
-            //$id=GET[id];
-            //dd($id);
-             $this->validate($request, [
-                'approve'       => 'required',
-                'issue_date'      => 'required',
-                'return_date'    => 'required',
-                
-             ]);
-                    //dd(Session::get('bookId'));
-             //  $ui=Session::get('userId');
-                //dd($ui);
-                //$bk=6;
-                //$ui=4;
-                // dd($request->id2);
-              IssueBook::where('user_id', $request->id)->where('book_id', $request->id2)->update([
-                    'approve' => $request->approve,
-                    'issue_date' => $request->issue_date,
-                    'return_date' => $request->return_date,
-                ]);
-                /*$query= DB::table('books')->where('id','=',Session::get('bookId'));
-                 $query->decrement('quantity', 1);
-                  */
-                // DB::table('books')->join('issue_book','issue_book.book_id','=','books.id') ->select('books.*','cart.id as cart_id');
-                
-			 /*              $data = array('name'=>"Ashi milonee");
-
-				 //$pdf = PDF::loadView('Books.test', $data);
-				   Mail::send(['text'=>'mail'], $data, function($message) {
-					  $message->to('urvashi2705@gmail.com', "Ashi's book")->subject
-						 ('Laravel Basic Testing Mail')->attach('borrowBook.pdf');
-					  $message->from('urvashi.hiranandani@brainvire.com','ashi milonee');
-				   });*/
-      
-                    $mpdf = new \Mpdf\Mpdf();
-                    //$pdf=\App::make('dompdf.wrapper');
-            $data["email"]=$request->email;
-            $data["client_name"]=$request->first_name;
-            $data["subject"]="Borrow Book";
-         // Write some HTML code:
-          /*$books=DB::table('issue_book')
-               ->join('books', 'issue_book.book_id', '=', 'books.id')
-               ->where('issue_book.user_id', $userId)
-               ->get();*/
-             $userId=$request->id;
-             $bookId=$request->id2;
-             // dd($userId);
-            
-                $p=IssueBook
-               ::join('books', 'issue_books.book_id', '=', 'books.id')
-               ->join('users', 'issue_books.user_id', '=', 'users.id')
-              // ->where("issue_book.approve",'=',"pending")->where('user_id',$userId)
-               ->where("issue_books.approve", '=', "yes")->where('user_id', $userId)->where('book_id', $bookId)
-               // ->select( 'issue_book.*', 'users.id AS u_id', 'book.*' ,'issue_book.*' )
-               ->get();
-            $book= view()->share('p', $p);
-     //dd($book);
-       // $book= view()->share('p', $p);
-       //$image= asset('upload/'.$bk->image) ;
-         // $pdf= PDF::loadview('check_pdf');
-     //  ob_start();
-        
-            $output = '
-			 <h3 align="center">Borrow Book Data</h3>
-			 <table width="100%" style="border-collapse: collapse; border: 0px;">
-			  <tr>
-			<th style="border: 1px solid; padding:12px;" width="30%">User Name</th>
-			 <th style="border: 1px solid; padding:12px;" width="30%">Image</th>
-			<th style="border: 1px solid; padding:12px;" width="30%">Title</th>
-			<th style="border: 1px solid; padding:12px;" width="15%">Author</th>
-			<th style="border: 1px solid; padding:12px;" width="15%">Category</th>
-			 <th style="border: 1px solid; padding:12px;" width="20%">IssueDate</th>
-			  <th style="border: 1px solid; padding:12px;" width="20%">Return Date</th>
-		   </tr>
-			 ';
-            foreach ($book as $bk) {
-                   $output .= '
-      <tr>
-		  <td style="border: 1px solid; padding:12px;">'.$bk->first_name.'</td>
-	   <td style="border: 1px solid; padding:12px;">'.$bk->image.'</td>
-	   
-       <td style="border: 1px solid; padding:12px;">'.$bk->title.'</td>
-       <td style="border: 1px solid; padding:12px;">'.$bk->author.'</td>
-       <td style="border: 1px solid; padding:12px;">'.$bk->category.'</td>
-       <td style="border: 1px solid; padding:12px;">'.$bk->issue_date.'</td>
-	   <td style="border: 1px solid; padding:12px;">'.$bk->return_date.'</td>
-      </tr>
-      ';
-            }
-            $output .= '</table>';
-            $mpdf->WriteHTML("$output");
-       
-         // Output a PDF file directly to the browser
-         //$mpdf->Output('book.pdf', 'D');
-
-            Mail::send('Books.test', $data, function ($message) use ($data, $mpdf) {
-                $message->to($data["email"], $data["client_name"])
-                ->subject($data["subject"])
-                ->attachData($mpdf->output('invoice.pdf', 'S'), "invoice.pdf");
-            });
-       // $mpdf->SendHTML("$output");
-       
-         // Output a PDF file directly to the browser
-         //$mpdf->Output('book.pdf', 'D');
-                 return redirect('request_book')->with('success', "Request accepted successfully");
-        } catch (\Exception $e) {
-            return redirect('request_book')->with('error', "Fail to approve data.");
-        }
-    }
-    
-    public function returnBook($id, $id2)
-    {
-        try {
-               // dd($id2);
-              //$userId=auth()->user()->id;
-             // dd($userId);
-             $borrow= IssueBook::where('user_id', $id)->where('book_id', $id2)->update([
-            'approve'=>"return"
-        //'issue_date'=>$request->issue_date,
-        //'return_date'=>$request->return_date
-             ]);
-            $query=DB::table('books')->where('id', '=', $id);
-            $query->increment('quantity', 1);
-        
-             //ModelName::where(['id'=>1,'user'=>'admin'])->update(['column_name'=>'value',.....]);
-               /*$books=DB::table('issue_book')->where('user_id',$userId)->where('book_id',$id)->update([
-                    approve=>"return"
-               ]);
-
-			*/            //return view('books.borrowList', ['issue_book'=>$books]);
-            return back()->with('success', "Book return successfully.");
-        } catch (\Exception $e) {
-            return back()->with('error', "Fail to return book list.");
-        }
-    }
-    public function returnBookPage()
-    {
-        try {
-             $books=IssueBook
-               ::join('books', 'issue_books.book_id', '=', 'books.id')
-               ->join('users', 'issue_books.user_id', '=', 'users.id')
-               ->where('issue_books.approve', "return")
-               // ->select( 'issue_book.*', 'users.id AS u_id', 'book.*' ,'issue_book.*' )
-               ->get();
-              /*foreach($books as $bk)
-               {
-
-                    //   session('bookid', $bk->b_id);
-
-                    session()->put('userId', $bk->id);
-                    //session('userid', $bk->id);
-               }*/
-              
-            return view('Books.ReturnBookDetail', ['issue_book'=>$books]);
-             //return view('Books.ReturnBookDetail');
-        } catch (\Exception $e) {
-            return back()->with('error', "Fail to return book list.");
-        }
     }
 }

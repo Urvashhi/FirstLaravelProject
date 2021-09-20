@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Models\Book;
 use App\Models\Cart;
@@ -21,9 +22,13 @@ use Illuminate\Filesystem\Filesystem;
 
 class BooksController extends Controller
 {
-	
-	
-	 //protected $users;
+    
+	/*public function user()
+    {
+        return $this->belongsTo('App\User');
+    }*/
+    
+     //protected $users;
 
     /**
      * Create a new controller instance.
@@ -66,7 +71,7 @@ class BooksController extends Controller
                 //dd($imageName);
                 $abc=$request->image->move('upload/', $imageName);
                 $request->image=$imageName;
-				
+                
                $book=([
                     'isbn'          => $request->isbn,
                     'title'         => $request->title,
@@ -80,11 +85,11 @@ class BooksController extends Controller
                     'image'         => $request->image
                     
                 ]);
-				
-			
-				$this->book->storeBook($book);
+                
+            
+                $this->book->storeBook($book);
                 return back()->with('success', "Book inserted successfully.");
-		} catch (\Exception $e) {
+        } catch (\Exception $e) {
             return back()->with('error', "Fail to insert Book.");
         }
     }
@@ -118,28 +123,26 @@ class BooksController extends Controller
         } catch (\Exception $e) {
             return view('books.notfound');
         }*/
-		//$b=new Book;
-		try{
-			 $search=$request->search;
-			   $record_per_page = isset($request->record_per_page) ? $request->record_per_page: 3;
-				$books=$this->book->show($search,$record_per_page);
-			//dd($books);
-				return view('books.book_list', compact('books'));
-		   } catch (\Exception $e) {
-				return view('books.notfound');
-			}
+        //$b=new Book;
+        try {
+             $search=$request->search;
+               $record_per_page = isset($request->record_per_page) ? $request->record_per_page: 3;
+                $books=$this->book->show($search, $record_per_page);
+            //dd($books);
+                return view('books.book_list', compact('books'));
+        } catch (\Exception $e) {
+             return view('books.notfound');
+        }
     }
     
     public function editBook($id)
     {
         try {
-           
-			$book=$this->book->bookEdit($id);
-			 return view('books.edit_book', compact('book'));
-		} catch (\Exception $e) {
+            $book=$this->book->bookEdit($id);
+             return view('books.edit_book', compact('book'));
+        } catch (\Exception $e) {
             return back()->with('editid', "id not found ");
         }
-       
     }
     
     public function updateBook(Request $request)
@@ -166,7 +169,7 @@ class BooksController extends Controller
                    
                 $request->image=$imageName;
                         
-               $data=([
+                $data=([
                     'isbn' => $request->isbn,
                     'isbn'          => $request->isbn,
                     'title'         => $request->title,
@@ -179,9 +182,9 @@ class BooksController extends Controller
                     'quantity'      => $request->quantity,
                     'image'         => $request->image
                 ]);
-				$id=$request->id;
-				//$book_update=new Book;
-				$this->book->updateBook($data,$id);
+                $id=$request->id;
+                //$book_update=new Book;
+                $this->book->updateBook($data, $id);
             } catch (\Exception $e) {
                  return back()->with('error', "Fail to update Book.");
             }
@@ -205,7 +208,7 @@ class BooksController extends Controller
                 // $path=$request->image->move(public_path('upload/'), $imageName);
                
                 //$request->image=$imageName;
-           try {
+            try {
                  $data=([
                     'isbn'          => $request->isbn,
                     'title'         => $request->title,
@@ -218,11 +221,11 @@ class BooksController extends Controller
                     'quantity'      => $request->quantity,
                     //'image'       => $request->image
                     ]);
-					$id=$request->id;
-				//	dd($id);
-				//$book_update=new book;
-				$this->book-> updateBook($data,$id);
-          } catch (\Exception $e) {
+                    $id=$request->id;
+                 // dd($id);
+                 //$book_update=new book;
+                 $this->book-> updateBook($data, $id);
+            } catch (\Exception $e) {
                 return back()->with('success', "Fail to update Book.");
             }
                 return back()->with('error', "Book data updated successfully");
@@ -236,13 +239,13 @@ class BooksController extends Controller
     {
         try {
                 $books = $this->book::find($id);
-				//dd($books);
+                //dd($books);
                 //$file_name = $request->image;
                 $file_name = $books->image;
                 //$imageName =  $request->image;
                 $path=public_path('upload/'.$file_name);
                // $book =new Book;
-				$this->book->deleteBook($id);
+                $this->book->deleteBook($id);
                 unlink($path);
                 return back()->with('success', "Book deleted successfully");
         } catch (\Exception $e) {
@@ -252,6 +255,7 @@ class BooksController extends Controller
     
     public function borrowBook(Request $request)
     {
+      
         try {
             //dd($request->$book->id);
             if (!auth()->user()) {
@@ -290,28 +294,10 @@ class BooksController extends Controller
                             /*if(!Books::where('id',$cart->book_id)->where('quantity',">=",$cart->quantity))
                             {
                                 $cartDetail= Cart::where('user_id',auth()->user()->id)->where('book_id',$book_id)->first();
-
                                 $removeBook->delete();
-
                             }*/
                            $issue->save();
                             return redirect('/dashboard')->with('success', 'Your book request has been sent');
-                    }
-                        
-                    /*if (IssueBook::where('approve', $issue->approve === 'yes')->where('user_id', auth()->user()->id)) {
-                            return redirect('/cart')->with('error', 'Your previous book has not been returned yet');
-                    }*/
-                    if (IssueBook::where('approve', $issue->approve === 'pending')) {
-                         // $issue =new IssueBook;
-                        $issue->user_id=$cart['user_id'];
-                        $issue->book_id=$cart['book_id'];
-                        //dd($issue->book_id);
-                        $issue->approve="pending";
-                        $issue->issue_date="pending";
-                        $issue->return_date="pending";
-                         Cart::where('user_id', $userId)->delete();
-                        $issue->save();
-                         return redirect('/dashboard')->with('success', 'Your book request has been sent');
                     }
                 }
             }
@@ -322,10 +308,9 @@ class BooksController extends Controller
     public function singleBook($id)
     {
         try {
-			
-			//dd($id);
+            //dd($id);
              $book =$this->book->bookSingle($id);
-			 
+             
             //$data=['LoggedUserInfo'=>User::where('id', '=', session('LoggedUser'))->first()];
             //dd(session('LoggedUser'));
             return view('visitor.singleBook', compact('book'));
@@ -334,100 +319,9 @@ class BooksController extends Controller
         }
     }
     
+   
     
-    public function borrowList()
-    {
-        try {
-              $userId=auth()->user()->id;
-               $books=$this->book
-               ::join('books', 'issue_book.book_id', '=', 'books.id')
-               ->where('issue_book.user_id', $userId)
-               ->get();
-            return view('books.borrowList', ['issue_book'=>$books]);
-        } catch (\Exception $e) {
-            return back()->with('error', "Fail to borrow book list.");
-        }
-    }
-    
-    
-    
-    public function downloadPdf()
-    {
-        try {
-            $mpdf = new \Mpdf\Mpdf();
-        
-        // Write some HTML code:
-         /*$books=DB::table('issue_book')
-               ->join('books', 'issue_book.book_id', '=', 'books.id')
-               ->where('issue_book.user_id', $userId)
-               ->get();*/
-               $userId=auth()->user()->id;
-               $p=IssueBook
-               ::join('books', 'issue_books.book_id', '=', 'books.id')
-               ->where('issue_book.user_id', $userId)
-               ->get();
-    //dd($p);
-            $book= view()->share('p', $p);
-      //$image= asset('upload/'.$bk->image) ;
-        // $pdf= PDF::loadview('check_pdf');
-            $output = '
-     <h3 align="center">Customer Data</h3>
-     <table width="100%" style="border-collapse: collapse; border: 0px;">
-      <tr>
-    <th style="border: 1px solid; padding:12px;" width="30%">Image</th>
-    <th style="border: 1px solid; padding:12px;" width="30%">Title</th>
-    <th style="border: 1px solid; padding:12px;" width="15%">Author</th>
-    <th style="border: 1px solid; padding:12px;" width="15%">Category</th>
-    <th style="border: 1px solid; padding:12px;" width="20%">Status</th>
-	 <th style="border: 1px solid; padding:12px;" width="20%">IssueDate</th>
-	  <th style="border: 1px solid; padding:12px;" width="20%">Return Date</th>
-   </tr>
-     ';
-            foreach ($book as $bk) {
-                $output .= '
-      <tr>
-		
-	   <td style="border: 1px solid; padding:12px;">'.$bk->image.'</td>
-       <td style="border: 1px solid; padding:12px;">'.$bk->title.'</td>
-       <td style="border: 1px solid; padding:12px;">'.$bk->author.'</td>
-       <td style="border: 1px solid; padding:12px;">'.$bk->category.'</td>
-       <td style="border: 1px solid; padding:12px;">'.$bk->approve.'</td>
-       <td style="border: 1px solid; padding:12px;">'.$bk->issue_date.'</td>
-	   <td style="border: 1px solid; padding:12px;">'.$bk->return_date.'</td>
-      </tr>
-      ';
-            }
-            $output .= '</table>';
-
-            $mpdf->WriteHTML("$output");
-       
-        // Output a PDF file directly to the browser
-            $mpdf->Output('book.pdf', 'D');
-            //$book = Books::latest()->paginate(5);
-
-  
-       /* if($request->has('download'))
-        {
-            $books=DB::table('issue_book')->get();
-            $pdf = PDF::loadView('Books.borrowList',compact('book'));
-            return $pdf->download('pdfview.pdf');
-        }
-
-        return view('Books.borrowList',compact('book'));
-            //$books=DB::table('issue_book')->get();
-            //dd($book);
-            //dd("bvsbdhgsvhgs");
-           // $pdf= PDF::loadview('books.borrowList',compact('books'));
-              //dd($pdf);
-
-             // $pdf= PDF::loadview('Books.test');dd($pdf);
-             // dd($pdf->download('Books.test.pdf'));
-              //return $pdf->download('book.pdf');*/
-        } catch (\Exception $e) {
-            return back()->with('error', "Fail to exportPDF .");
-        }
-    }
-    
+   
     function importForm()
     {
         return view('Books.importForm');
@@ -466,5 +360,3 @@ class BooksController extends Controller
         return $pdf_doc->download('check_pdf.pdf');
     }*/
 }
-
-

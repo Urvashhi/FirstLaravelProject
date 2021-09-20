@@ -69,15 +69,15 @@ if(isset($_COOKIE['email']) && isset($_COOKIE['password']))
 {{ csrf_field() }}
 
 <label>Email:</label>
-<input name="email" type="text" class="form-control"  placeholder="Email" id="email" value="@php if(!isset($_COOKIE['email'])){ echo old('email'); }else{ echo $email; } @endphp"> 
+<input name="email" type="text" class="form-control"  placeholder="Email" id="email" > 
 <br>
 <label >Password:</label>
-<input name="password" type="password" class="form-control"  placeholder="Password" id="password" value="@php if(!isset($_COOKIE['password'])){ echo old('password'); }else{ echo $password; } @endphp">
+<input name="password" type="password" class="form-control"  placeholder="Password" id="password" >
 <br>
 
 <div class="form-group">
     <!--<label>Keep me signed in</label>-->
-    <input type="checkbox" id="remember" name="remember" class="remember"> <label>Remember Me</label><br>
+    <input type="checkbox" id="remember_me" name="remember_me" class="remember"> <label>Remember Me</label><br>
     </div>
     <!--<div class="form-group">
     <!--<label>Keep me signed in</label>-->
