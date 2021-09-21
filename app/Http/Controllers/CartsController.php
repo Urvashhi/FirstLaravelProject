@@ -37,12 +37,13 @@ class CartsController extends Controller
                  $count = $this->cartBook->where('book_id', $book_id)->count();
              //  dd($count);
                 $ct = $this->cartBook->where('user_id', $userId)->count();
-        if ($count >= 1 && $ct > 0) {
+        if ($count  && $ct >= 1) {
                return redirect('dashboard')->with('error', "Book is already in cart");
-        }
+        }else{
                     
             $this->cartBook->addBookToCart($data, $book_id);
-            /*if($count){
+           
+		}/*if($count){
                 redirect('dashboard')->with('error', "Book is already in cart");
                 }*/
                     

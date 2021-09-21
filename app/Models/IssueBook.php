@@ -39,6 +39,7 @@ class IssueBook extends Model
                ->where('issue_books.approve', "return")
                // ->select( 'issue_book.*', 'users.id AS u_id', 'book.*' ,'issue_book.*' )
                ->get();
+		return $books;
     }
      
     public function returnList()
@@ -135,8 +136,9 @@ class IssueBook extends Model
                return $data;
     }
     
-    public function borrowNow($allCart, $userId)
+    public function borrowBook($allCart, $userId)
     {
+		//print($allCart);
         foreach ($allCart as $cart) {
             //dd($bookid);
             $this->book_id=$cart['book_id'];
@@ -145,10 +147,10 @@ class IssueBook extends Model
             $this->issue_date="pending";
             $this->return_date="pending";
             
-            $data=$this->save();
+           $data=$this->save();
             
             Cart::where('user_id', $userId)->delete();
-            return $data;
+           return $data;
         }
     }
     

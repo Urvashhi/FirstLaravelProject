@@ -46,7 +46,7 @@ Route::post('/logout', [UsersApiController::class,'logout'])->middleware('auth:s
 
 Route::post('/book_index', [BooksApiController::class,'index'])->name('book_index')->middleware('auth:sanctum');
 Route::get('/single_book/{id}', [BooksApiController::class,'singleBook'])->middleware('auth:sanctum');
-Route::post('/borrow_now', [BooksApiController::class,'borrowNow'])->middleware('auth:sanctum');
+//Route::post('/borrow_now', [BooksApiController::class,'borrowNow'])->middleware('auth:sanctum');
 
 Route::post('/add_to_cart', [CartsApiController::class,'addToCart'])->middleware('auth:sanctum');
 Route::post('/cart_item', [CartsApiController::class,'cartItem'])->middleware('auth:sanctum');

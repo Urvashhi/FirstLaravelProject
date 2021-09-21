@@ -9,25 +9,26 @@ use Illuminate\Http\Request;
 use Session;
 use Illuminate\Support\Facades\DB;
 
-class CartApiController extends Controller
+class CartsApiController extends Controller
 {
+	
+	public function __construct(Cart $cartBooks)
+    {
+        $this->cartBook = $cartBooks;
+    }
+
    
-    
     public function cart()
     {
-            $userId=3;
-            return DB::table('cart')
-            ->join('books', 'cart.book_id', '=', 'books.id')
-            ->where('cart.user_id', $userId)
-            ->select('books.*', 'cart.id as cart_id')
-            ->get();
-       
+            $userId=auth()->user()->id;
+            $books=$this->cartBook->show($userId);
+            return $books; 
     }
     
     public function addToCart(Request $request)
     {
        
-             $cart=new Cart;
+        /*     $cart=new Cart;
              $cart->book_id=$request->book_id;
                $cart->user_id=$request->user_id;
              // dd($cart->book_id);
@@ -46,17 +47,35 @@ class CartApiController extends Controller
             $query->decrement('quantity', 1);
             
            $result= $cart->save();
-        if ($result) {
+        */
+		  $book_id=$request->book_id;
+            
+             $userId=auth()->user()->id;
+          
+            $data=([
+                'book_id' => $book_id,
+                'user_id' => $userId
+                ]);
+                 $count = $this->cartBook->where('book_id', $book_id)->count();
+             //  dd($count);
+                $ct = $this->cartBook->where('user_id', $userId)->count();
+        if ($count  && $ct >= 1) {
+               return redirect('dashboard')->with('error', "Book is already in cart");
+        }else{
+                    
+           $result= $this->cartBook->addBookToCart($data, $book_id);
+           if ($result) {
             return ["result"=>"Book added to cart successfully."];
         } else {
             return ["result"=>"Fail to add into a cart."];
         }
+		}
     }
     
     static function cartItem()
     {
-        //$userId=auth()->user()->id;
-        $userId=3;
+        $userId=auth()->user()->id;
+        //$userId=3;
         return Cart::where('user_id', $userId)->count();
     }
     
@@ -72,13 +91,20 @@ class CartApiController extends Controller
                 return ["result"=>"Book remove from cart successfully."];
         }*/
         //return $id;
-        if (!empty($id)) {
-               $query=DB::table('books')->where('id', '=', $id);
+     /*   if (!empty($id)) {
+       8        $query=DB::table('books')->where('id', '=', $id);
                 $query->increment('quantity', 1);
         
                Cart::destroy($id);
         
                return ["result"=>"Book remove from cart successfully."];
+        }*/
+		$bookId=8;
+		 $result= $this->cartBook->removeBook($id, $bookId);
+			if ($result) {
+            return ["result"=>"Book deleted successfully."];
+        } else {
+            return ["result"=>"Fail to remove from cart."];
         }
-    }
+	}
 }

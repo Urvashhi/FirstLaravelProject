@@ -252,59 +252,7 @@ class BooksController extends Controller
             return back()->with('error', "Fail to delete Book.");
         }
     }
-    
-    public function borrowBook(Request $request)
-    {
-      
-        try {
-            //dd($request->$book->id);
-            if (!auth()->user()) {
-                   return back()->with('error', "You Must Have To Login To borrow book.");
-            } else {
-                $userId=auth()->user()->id;
-                $cartDetail = Cart::where('user_id', $userId)->get();
-                foreach ($cartDetail as $cart) {
-                    $issue =new IssueBook;
-                    $issue->user_id=$cart['user_id'];
-                    $issue->book_id=$cart['book_id'];
-                    $issue->approve="pending";
-                     $issue->issue_date="pending";
-                     $issue->return_date="pending";
-                        
-                    $ct = IssueBook::where('user_id', $cart['user_id'])->count();
-                 //   //dd($ct);
-                    //$count = DB::table('issue_book')->where('book_id', $cart['book_id'])->count();
-                    //$count = DB::table('cart')
-                    //dd($ct);
-                   /*if( $ct >=1)
-                    {
-                            //dd("djsahdsa");
-                        return redirect('dashboard')->with('error',"One book is already you havde so you can't borrow second again.");
-                    }*/
-                    
-                    if (IssueBook::where('approve', $issue->approve === 'return')) {
-                             // $issue =new IssueBook;
-                        $issue->user_id=$cart['user_id'];
-                            $issue->book_id=$cart['book_id'];
-                            //dd($issue->book_id);
-                        $issue->approve="pending";
-                            $issue->issue_date="pending";
-                            $issue->return_date="pending";
-                             Cart::where('user_id', $userId)->delete();
-                            /*if(!Books::where('id',$cart->book_id)->where('quantity',">=",$cart->quantity))
-                            {
-                                $cartDetail= Cart::where('user_id',auth()->user()->id)->where('book_id',$book_id)->first();
-                                $removeBook->delete();
-                            }*/
-                           $issue->save();
-                            return redirect('/dashboard')->with('success', 'Your book request has been sent');
-                    }
-                }
-            }
-        } catch (\Exception $e) {
-            return back()->with('error', "Fail to borrow Book.");
-        }
-    }
+   
     public function singleBook($id)
     {
         try {
@@ -320,43 +268,4 @@ class BooksController extends Controller
     }
     
    
-    
-   
-    function importForm()
-    {
-        return view('Books.importForm');
-      //return Books::all();
-    //return Excel::download(new DataExport, 'book.xlsx');
-    }
-  /**
-   * Export to csv
-   */
-    public function importCSV(Request $request)
-    {
-        //dd("Ferereewrt");
-        Excel::import(new BookImport, $request->file);
-        return "Record are imported successfully";
-    }
-    
-   /*  public function exportPDF() {
-     //   ini_set('display_errors', 1);
-        //ini_set('display_startup_errors', 1);
-    //error_reporting(E_ALL);
-
- $books = Books::all();
-
-      // share data to view
-      view()->share('books',$books);
-      $pdf = PDF::loadView('Books.book_list', $books);
-
-      // download PDF file with download method
-      return $pdf->download('pdf_file.pdf');
-    //require_once __DIR__ . 'C:/xampp/php/PEAR/vendor/autoload.php';
-     /*   $books= Books::all();
- view()->share('book',$books);
-        //view()->share('p', $p);
-        $pdf_doc = PDF::loadView('Books.book_list', compact('books'));
-
-        return $pdf_doc->download('check_pdf.pdf');
-    }*/
 }
