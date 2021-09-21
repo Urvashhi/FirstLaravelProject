@@ -17,6 +17,7 @@ use App\Imports\BookImport;
 //use Illuminate\Database\Query\Builder;
 use DB;
 use PDF;
+use Mail;
 //use App\Repositories\UserRepository;
 //use File;
 use Illuminate\Filesystem\Filesystem;
@@ -66,9 +67,53 @@ class IssueBooks extends Controller
 		$approve=$request->approve;
 		$issue_date=$request->issue_date;
 		$return_date=$request->return_date;
-		$borrow=$this->issueBook->acceptRequest($id, $id2, $approve, $issue_date, $return_date);
-		
-		return back()->with("success","Request Accepted.");
+		$this->issueBook->acceptRequest($id, $id2, $approve, $issue_date, $return_date);
+		$userId=$request->id;
+		$bookId=$request->id2;
+		$borrow=$this->issueBook->sendMail($userId,$bookId);
+		$data["email"]=$request->email;
+        $data["client_name"]=$request->name;
+        $data["subject"]='Order Confirmation mail';
+        
+        // $pdf->loadHTML('admin.request');
+        $pdf = \App::make('dompdf.wrapper');
+        
+		  $output = '
+		 <h3 align="center">Borrow Book List</h3>
+		 <table width="100%" style="border-collapse: collapse; border: 0px;">
+		  <tr>
+			<th style="border: 1px solid; padding:12px;" width="15%">ISBN</th>
+		<th style="border: 1px solid; padding:12px;" width="20%">Book Name</th>
+		<th style="border: 1px solid; padding:12px;" width="30%">Author</th>
+		 <th style="border: 1px solid; padding:12px;" width="15%">Publisher</th>
+		<th style="border: 1px solid; padding:12px;" width="20%">Description</th>
+	   
+	   </tr>
+		 ';
+			foreach($borrow as $book) {
+				$output .= '
+		  <tr>
+		   <td style="border: 1px solid; padding:12px;">'.$book->isbn.'</td>
+		   <td style="border: 1px solid; padding:12px;">'.$book->title.'</td>
+		   <td style="border: 1px solid; padding:12px;">'.$book->author.'</td>
+		   <td style="border: 1px solid; padding:12px;">'.$book->publisher.'</td>
+		  
+		   <td style="border: 1px solid; padding:12px;">'.$book->description.'</td>
+		  </tr>
+		  ';
+			}
+        $output .= '</table>';
+        
+		$pdf->loadHTML("$output");
+     
+      
+            Mail::send('test', $data, function ($message) use ($data, $pdf) {
+                $message->to($data["email"], $data["client_name"])
+                ->subject($data["subject"])
+                ->attachData($pdf->stream(), "invoice.pdf");
+            });
+
+		return redirect('request_book')->with("success","Request Accepted.");
 	}
 	
 	
@@ -133,7 +178,7 @@ class IssueBooks extends Controller
 		return back()->with("success","Book Return successfully.");
 	}
 	
-    public function borrowBook(Request $request)
+  /*  public function borrowBook(Request $request)
     {
       
         try {
@@ -152,7 +197,7 @@ class IssueBooks extends Controller
             return back()->with('error', "Fail to borrow Book.");
         }
     }
-    
+    */
 	public function downloadPdf()
 	{
 		$pdf=\App::make('dompdf.wrapper');

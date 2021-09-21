@@ -109,11 +109,12 @@ class IssueBook extends Model
     
     public function acceptRequest($id, $id2, $approve, $issue_date, $return_date)
     {
-        return $this->where('user_id', $id)->where('book_id', $id2)->update([
+        $data= $this->where('user_id', $id)->where('book_id', $id2)->update([
                     'approve' => $approve,
                     'issue_date' => $issue_date,
                     'return_date' => $return_date,
                 ]);
+			return $data;
     }
     
     public function sendMail($userId, $bookId)

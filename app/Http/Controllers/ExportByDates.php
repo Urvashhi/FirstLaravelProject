@@ -64,11 +64,11 @@ class DataExport implements FromCollection, WithHeadings
                ->where('issue_book.approve','=',"approved")
                //->select('borrow.*','borrow.user_id','borrow.book_id')
             */
-              return DB::table('issue_book')
-               ->join('books', 'issue_book.book_id', '=', 'books.id')
-               ->join('users', 'issue_book.user_id', '=', 'users.id')
+              return DB::table('issue_books')
+               ->join('books', 'issue_books.book_id', '=', 'books.id')
+               ->join('users', 'issue_books.user_id', '=', 'users.id')
                //->where('issue_book.approve', "borrow")
-               ->whereBetween('issue_book.issue_date', array($date, $date1))
+               ->whereBetween('issue_books.issue_date', array($date, $date1))
                // ->where('issue_book.issue_date', $date)
                ->select('first_name', 'title', 'author', 'isbn', 'lang', 'approve', 'issue_date')
                 ->get();
